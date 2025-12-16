@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Регламент диспансерного наблюдения — Гипертоническая болезнь (ГБ)</title>
+  <meta name="description" content="Регламент диспансерного наблюдения по нозологии «Гипертоническая болезнь»: цели, визиты, обследования, критерии эффективности, эскалация, консультации, госпитализация, документация." />
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#111a2e;
+      --text:#e6eaf2;
+      --muted:#aab3c5;
+      --line:#233152;
+      --accent:#6ee7ff;
+      --accent2:#a78bfa;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 15% 0%, rgba(110,231,255,.14), transparent 55%),
+                  radial-gradient(1200px 700px at 95% 10%, rgba(167,139,250,.14), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit; text-decoration:none}
+    .wrap{max-width:1120px; margin:0 auto; padding:22px 18px 60px}
+
+    header{
+      display:flex; gap:14px; align-items:center; justify-content:space-between;
+      padding:16px 16px;
+      background: linear-gradient(180deg, rgba(17,26,46,.85), rgba(17,26,46,.55));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position: sticky; top: 12px; z-index: 20;
+      backdrop-filter: blur(10px);
+    }
+    .brand{display:flex; align-items:center; gap:12px; min-width: 240px}
+    .logo{width:40px;height:40px;border-radius:12px; background: linear-gradient(135deg, rgba(110,231,255,.85), rgba(167,139,250,.85));}
+    .brand h1{font-size:14px; margin:0; line-height:1.2}
+    .brand .sub{font-size:12px; color:var(--muted)}
+
+    .tools{display:flex; gap:10px; align-items:center; flex:1; justify-content:flex-end}
+    .search{
+      display:flex; align-items:center; gap:10px;
+      background: rgba(15,23,42,.7);
+      border:1px solid var(--line);
+      padding:10px 12px;
+      border-radius: 14px;
+      min-width: 320px;
+      max-width: 520px;
+      width: 100%;
+    }
+    .search input{width:100%; border:0; outline:0; background: transparent; color: var(--text); font-size: 13px;}
+    .btn{
+      border:1px solid var(--line);
+      background: rgba(15,23,42,.7);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      transition: transform .06s ease, background .2s ease, border .2s ease;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .btn:hover{background: rgba(17,26,46,.9)}
+    .btn:active{transform: translateY(1px)}
+
+    .card{
+      background: linear-gradient(180deg, rgba(17,26,46,.8), rgba(15,23,42,.75));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .hero{margin-top:16px; display:grid; grid-template-columns: 1.2fr .8fr; gap:14px;}
+    .muted{color: var(--muted)}
+    .pillrow{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+    .pill{font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--line); background: rgba(11,18,32,.35);}
+
+    nav{margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;}
+    .navlink{border:1px solid var(--line); background: rgba(15,23,42,.7); padding:8px 10px; border-radius: 999px; font-size: 12px;}
+    .navlink:hover{border-color: rgba(110,231,255,.35)}
+
+    section{scroll-margin-top: 96px}
+    .grid{margin-top:14px; display:grid; grid-template-columns: 1fr 1fr; gap:14px;}
+    .section-title{display:flex; align-items:flex-end; justify-content:space-between; gap:10px}
+    .section-title h3{margin:0; font-size:16px}
+    .kicker{font-size:12px; color: var(--muted)}
+
+    ul{margin:10px 0 0; padding-left: 18px}
+    li{margin:6px 0; line-height:1.35}
+
+    table{width:100%; border-collapse:separate; border-spacing:0; margin-top:10px; overflow:hidden; border-radius: 16px;}
+    thead th{ text-align:left; font-size:12px; color: var(--muted); background: rgba(11,18,32,.45); border-bottom: 1px solid var(--line); padding:10px 12px; }
+    tbody td{ padding:10px 12px; border-bottom:1px solid rgba(35,49,82,.65); font-size:13px; vertical-align:top; }
+    tbody tr:hover td{background: rgba(11,18,32,.22)}
+    tbody tr:last-child td{border-bottom:0}
+
+    .tag{font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid var(--line); background: rgba(11,18,32,.35); display:inline-block}
+
+    .cols{display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-top:10px}
+    .checklist{margin:0; padding:0; list-style:none}
+    .checklist li{display:flex; gap:10px; align-items:flex-start; border:1px solid rgba(35,49,82,.65); background: rgba(11,18,32,.25); border-radius: 14px; padding:10px 12px; margin:8px 0;}
+    .checklist input{margin-top:3px}
+    .small{font-size:12px; color:var(--muted)}
+
+    details{border:1px solid rgba(35,49,82,.65); background: rgba(11,18,32,.22); border-radius: 16px; padding:10px 12px; margin-top:10px;}
+    summary{cursor:pointer; font-size:13px; font-weight: 600}
+    details p{margin:8px 0 0; color: var(--muted); font-size:13px; line-height:1.45}
+
+    footer{margin-top:16px; color: var(--muted); font-size: 12px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; padding: 0 2px;}
+
+    @media print{
+      header, nav, .noprint{display:none !important}
+      body{background:#fff; color:#000}
+      .card{box-shadow:none; border:1px solid #ccc; background:#fff}
+      .muted, .small{color:#333}
+      a{color:#000}
+      table thead th{background:#f3f3f3}
+    }
+
+    @media (max-width: 980px){
+      .hero{grid-template-columns: 1fr}
+      .grid{grid-template-columns: 1fr}
+      .cols{grid-template-columns: 1fr}
+      .search{min-width: 0}
+      header{flex-wrap:wrap; justify-content:center}
+      .brand{min-width: 0; width: 100%; justify-content:center}
+      .tools{width:100%; justify-content:space-between}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Регламент ДН — Гипертоническая болезнь</h1>
+          <div class="sub">Цели • Обязанности • Визиты • Обследования • Эскалация • Документация</div>
+        </div>
+      </div>
+      <div class="tools">
+        <div class="search" role="search">
+          <span aria-hidden="true">⌕</span>
+          <input id="q" type="search" placeholder="Поиск: “креатинин”, “ЭхоКГ”, “криз”, “кардиолог”…" />
+        </div>
+        <button class="btn" id="btnPrint" title="Печать/сохранение в PDF">Печать</button>
+        <button class="btn" id="btnReset" title="Сброс">Сброс</button>
+      </div>
+    </header>
+
+    <div class="hero" id="top">
+      <div class="card">
+        <h2 style="margin:0 0 8px; font-size:18px">Общие положения</h2>
+        <div class="muted" style="line-height:1.55">
+          Артериальная гипертензия (гипертоническая болезнь, <b>ГБ</b>) относится к приоритетным хроническим неинфекционным заболеваниям,
+          подлежащим обязательному диспансерному наблюдению на уровне первичного звена.
+          Диспансерное наблюдение осуществляет <b>врач-терапевт участковый</b> в соответствии с действующими клиническими рекомендациями Минздрава РФ
+          и направлено на снижение сердечно-сосудистого риска, профилактику осложнений и поддержание целевых уровней артериального давления.
+        </div>
+        <div class="pillrow">
+          <span class="pill">Формат: ПМСП / амбулаторный этап</span>
+          <span class="pill">Без персональных данных</span>
+          <span class="pill">Версия: <b>v1.0</b> • Дата: <b><span id="today"></span></b></span>
+        </div>
+        <div class="noprint" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:8px">
+          <button class="btn" id="modeDoctor">Режим: Врач</button>
+          <button class="btn" id="modePatient">Режим: Пациент</button>
+        </div>
+        <div class="noprint" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:8px">
+          <a class="btn" href="#qr">QR-страница пациента</a>
+        </div>
+        <nav class="noprint" aria-label="Навигация">
+          <a class="navlink" href="#goals">Цели</a>
+          <a class="navlink" href="#duties">Обязанности врача</a>
+          <a class="navlink" href="#visits">Кратность визитов</a>
+          <a class="navlink" href="#diagnostics">Диагностический минимум</a>
+          <a class="navlink" href="#effectiveness">Эффективность</a>
+          <a class="navlink" href="#decomp">Декомпенсация</a>
+          <a class="navlink" href="#consults">Консультации</a>
+          <a class="navlink" href="#hospital">Госпитализация</a>
+          <a class="navlink" href="#docs">Документация</a>
+        </nav>
+      </div>
+
+      <div class="card">
+        <h2 style="margin:0 0 8px; font-size:18px">Дисклеймер</h2>
+        <div class="muted" style="line-height:1.55">
+          Материал предназначен для медицинских работников и служит организационным инструментом диспансерного наблюдения.
+          Фармакотерапия и клинические решения — согласно действующим клиническим рекомендациям.
+        </div>
+        <details>
+          <summary>Как использовать на приёме (30 секунд)</summary>
+          <p>
+            1) открой раздел «Кратность визитов» и зафиксируй следующий контроль; 2) пройди чек-лист первичного/годового контроля;
+            3) при «красных флагах» смотри раздел «Декомпенсация» и «Госпитализация».
+          </p>
+        </details>
+        <div class="noprint" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap">
+          <button class="btn" id="btnCheckAll">Отметить всё</button>
+          <button class="btn" id="btnUncheckAll">Снять отметки</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card" id="goals">
+        <div class="section-title">
+          <h3>2. Цели диспансерного наблюдения</h3>
+          <div class="kicker">Что считаем «правильным результатом»</div>
+        </div>
+        <ul>
+          <li>достижение и поддержание целевых уровней АД;</li>
+          <li>снижение риска сердечно-сосудистых осложнений (инсульт, ИМ, ХСН);</li>
+          <li>раннее выявление поражения органов-мишеней;</li>
+          <li>контроль эффективности и безопасности антигипертензивной терапии;</li>
+          <li>повышение приверженности пациента лечению и немедикаментозным рекомендациям.</li>
+        </ul>
+      </section>
+
+      <section class="card" id="duties">
+        <div class="section-title">
+          <h3>3. Обязанности врача-терапевта участкового</h3>
+          <div class="kicker">Организационный минимум действий</div>
+        </div>
+        <ul>
+          <li>подтвердить диагноз и стадию ГБ;</li>
+          <li>определить уровень сердечно-сосудистого риска;</li>
+          <li>назначать и корректировать антигипертензивную терапию в соответствии с клиническими рекомендациями;</li>
+          <li>контролировать достижение целевых значений АД;</li>
+          <li>организовать выполнение обязательного диагностического минимума;</li>
+          <li>своевременно выявлять признаки поражения органов-мишеней;</li>
+          <li>определять показания для консультаций узких специалистов;</li>
+          <li>вести медицинскую документацию и реестр диспансерных пациентов.</li>
+        </ul>
+      </section>
+
+      <section class="card" id="visits">
+        <div class="section-title">
+          <h3>4. Кратность визитов и динамическое наблюдение</h3>
+          <div class="kicker">Сроки контроля и «точки управления»</div>
+        </div>
+        <table aria-label="Кратность визитов">
+          <thead>
+            <tr>
+              <th>Категория пациента</th>
+              <th>Кратность визитов</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tag">Стабильное течение</span> (целевое АД достигнуто)</td>
+              <td>1 раз в 6 месяцев</td>
+            </tr>
+            <tr>
+              <td><span class="tag">Подбор/коррекция терапии</span></td>
+              <td>1 раз в 1–3 месяца</td>
+            </tr>
+            <tr>
+              <td><span class="tag">Высокий/очень высокий СС-риск</span></td>
+              <td>не реже 1 раза в 3 месяца</td>
+            </tr>
+            <tr>
+              <td><span class="tag">После госпитализации</span> по поводу осложнений</td>
+              <td>в течение 14 дней после выписки</td>
+            </tr>
+          </tbody>
+        </table>
+        <details>
+          <summary>Внеплановые визиты</summary>
+          <p>Допускается внеплановый визит при ухудшении самочувствия или подъёме артериального давления.</p>
+        </details>
+      </section>
+
+      <section class="card" id="diagnostics">
+        <div class="section-title">
+          <h3>5. Обязательный диагностический минимум</h3>
+          <div class="kicker">Первичный этап и динамика</div>
+        </div>
+
+        <div class="cols">
+          <div>
+            <div class="muted"><b>Первичный этап (включение в ДН)</b></div>
+            <ul>
+              <li>оценка факторов риска (курение, ожирение, гиподинамия);</li>
+              <li>измерение АД (в т.ч. на обеих руках);</li>
+              <li>оценка ИМТ;</li>
+              <li>осмотр врача-офтальмолога;</li>
+              <li>общий анализ крови (ОАК);</li>
+              <li>биохимический анализ крови: креатинин, глюкоза, липидограмма;</li>
+              <li>альбумин в моче;</li>
+              <li>общий анализ мочи (ОАМ);</li>
+              <li>ЭКГ;</li>
+              <li>эхокардиограмма (ЭхоКГ).</li>
+            </ul>
+          </div>
+          <div>
+            <div class="muted"><b>В динамике (не реже 1 раза в год)</b></div>
+            <ul>
+              <li>ОАК;</li>
+              <li>ОАМ;</li>
+              <li>креатинин;</li>
+              <li>липидный профиль;</li>
+              <li>ЭКГ;</li>
+              <li>ЭхоКГ.</li>
+            </ul>
+          </div>
+        </div>
+
+        <details>
+          <summary>Зачем выделены «первичный» и «годовой» этапы</summary>
+          <p>
+            Это снижает вариабельность ведения: первичный этап фиксирует базовый профиль риска и орган-мишени,
+            годовой — обеспечивает регулярный контроль осложнений и безопасности лечения.
+          </p>
+        </details>
+      </section>
+
+      <section class="card" id="effectiveness">
+        <div class="section-title">
+          <h3>6. Контроль эффективности лечения</h3>
+          <div class="kicker">Критерии оценки на визитах</div>
+        </div>
+        <ul>
+          <li>достижение целевого АД (&lt;140/90 мм рт. ст., при хорошей переносимости — ниже);</li>
+          <li>отсутствие выраженных побочных эффектов терапии;</li>
+          <li>стабильные показатели функции почек;</li>
+          <li>отсутствие признаков прогрессирования поражения органов-мишеней;</li>
+          <li>удовлетворительная приверженность лечению.</li>
+        </ul>
+      </section>
+
+      <section class="card" id="decomp">
+        <div class="section-title">
+          <h3>7. Признаки декомпенсации и коррекция тактики</h3>
+          <div class="kicker">Когда усиливать наблюдение и менять маршрут</div>
+        </div>
+        <div class="muted"><b>Признаки декомпенсации:</b></div>
+        <ul>
+          <li>стойкое АД ≥160/100 мм рт. ст. несмотря на терапию;</li>
+          <li>учащение гипертонических кризов;</li>
+          <li>появление или нарастание одышки, отёков;</li>
+          <li>ухудшение функции почек;</li>
+          <li>появление неврологической симптоматики.</li>
+        </ul>
+        <div class="muted" style="margin-top:10px"><b>Действия врача-терапевта:</b></div>
+        <ul>
+          <li>пересмотреть терапию;</li>
+          <li>усилить кратность наблюдения;</li>
+          <li>направить пациента на консультацию специалиста.</li>
+        </ul>
+      </section>
+
+      <section class="card" id="consults">
+        <div class="section-title">
+          <h3>8. Показания для консультаций узких специалистов</h3>
+          <div class="kicker">Кого и когда подключать</div>
+        </div>
+        <table aria-label="Консультации специалистов">
+          <thead>
+            <tr>
+              <th>Специалист</th>
+              <th>Показания</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Кардиолог</b></td>
+              <td>
+                <ul>
+                  <li>резистентная артериальная гипертензия;</li>
+                  <li>высокий и очень высокий сердечно-сосудистый риск;</li>
+                  <li>подозрение на вторичную АГ;</li>
+                  <li>необходимость подбора комбинированной терапии.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><b>Невролог</b></td>
+              <td>
+                <ul>
+                  <li>признаки цереброваскулярной недостаточности;</li>
+                  <li>перенесённый инсульт или ТИА.</li>
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td><b>Нефролог</b></td>
+              <td>
+                <ul>
+                  <li>снижение СКФ;</li>
+                  <li>протеинурия;</li>
+                  <li>подозрение на ренальную гипертензию.</li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card" id="hospital">
+        <div class="section-title">
+          <h3>9. Показания к госпитализации</h3>
+          <div class="kicker">Ситуации, требующие стационара</div>
+        </div>
+        <ul>
+          <li>гипертонический криз с осложнениями;</li>
+          <li>подозрение на острое нарушение мозгового кровообращения;</li>
+          <li>острый коронарный синдром;</li>
+          <li>быстрое прогрессирование поражения органов-мишеней.</li>
+        </ul>
+      </section>
+
+      <section class="card" id="homebp">
+        <div class="section-title">
+          <h3>Домашний дневник артериального давления</h3>
+          <div class="kicker">Асинхронный контроль между визитами</div>
+        </div>
+        <div class="muted" style="line-height:1.5">
+          Пациенту рекомендуется вести дневник АД в домашних условиях с последующей оценкой на приёме.
+          Допускается бумажный или электронный формат без передачи персональных данных.
+        </div>
+        <table aria-label="Домашний дневник АД">
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Время</th>
+              <th>АД (мм рт. ст.)</th>
+              <th>Пульс</th>
+              <th>Самочувствие</th>
+              <th>Комментарий</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>__ / __ / ____</td>
+              <td>утро</td>
+              <td>_____ / _____</td>
+              <td>_____</td>
+              <td>удовлетворительное</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>__ / __ / ____</td>
+              <td>вечер</td>
+              <td>_____ / _____</td>
+              <td>_____</td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="noprint" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap">
+          <button class="btn" id="btnShowBP">Показать дневник АД (30 дней)</button>
+          <button class="btn" id="btnDownloadBP">Скачать дневник АД (PDF, 30 дней)</button>
+        </div>
+        <div id="bpPreview" style="display:none; margin-top:10px"></div>
+        <details>
+          <summary>Как интерпретировать дневник</summary>
+          <p>
+            Для оценки эффективности терапии учитываются средние значения АД за 5–7 дней.
+            Стойкие показатели ≥140/90 мм рт. ст. или выраженные колебания требуют коррекции тактики.
+          </p>
+        </details>
+      </section>
+
+      <section class="card" id="docs">
+        <div class="section-title">
+          <h3>10. Документация</h3>
+          <div class="kicker">Что обязательно фиксировать</div>
+        </div>
+        <ul>
+          <li>вести индивидуальный план диспансерного наблюдения пациента с ГБ;</li>
+          <li>фиксировать результаты осмотров и обследований в медицинской документации;</li>
+          <li>включать пациента в реестр диспансерных больных участка;</li>
+          <li>ежегодно проводить оценку полноты диспансерного наблюдения.</li>
+        </ul>
+
+        <div class="cols" style="margin-top:10px">
+          <div>
+            <div class="muted"><b>Чек-лист первичного визита</b></div>
+            <ul class="checklist">
+              <li><input type="checkbox" class="cb" /><div><b>Диагноз/стадия подтверждены</b><div class="small">в т.ч. оценка факторов риска</div></div></li>
+              <li><input type="checkbox" class="cb" /><div><b>СС-риск определён</b><div class="small">зафиксировать категорию риска</div></div></li>
+              <li><input type="checkbox" class="cb" /><div><b>АД на обеих руках</b><div class="small">зафиксировать исходные значения</div></div></li>
+              <li><input type="checkbox" class="cb" /><div><b>Диагностический минимум назначен</b><div class="small">ОАК/ОАМ/биохимия/ЭКГ/ЭхоКГ/офтальмолог</div></div></li>
+              <li><input type="checkbox" class="cb" /><div><b>План наблюдения оформлен</b><div class="small">срок следующего визита</div></div></li>
+            </ul>
+          </div>
+          <div>
+            <div class="muted"><b>Чек-лист годового контроля</b></div>
+            <ul class="checklist">
+              <li><input type="checkbox" class="cb" /><div><b>ОАК</b></div></li>
+              <li><input type="checkbox" class="cb" /><div><b>ОАМ</b></div></li>
+              <li><input type="checkbox" class="cb" /><div><b>Креатинин</b><div class="small">контроль функции почек</div></div></li>
+              <li><input type="checkbox" class="cb" /><div><b>Липидный профиль</b></div></li>
+              <li><input type="checkbox" class="cb" /><div><b>ЭКГ</b></div></li>
+              <li><input type="checkbox" class="cb" /><div><b>ЭхоКГ</b></div></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card" id="qr">
+        <div class="section-title">
+          <h3>QR-страница для пациента (1 экран)</h3>
+          <div class="kicker">Кратко и понятно — открыть с телефона</div>
+        </div>
+        <div class="muted" style="line-height:1.55">
+          Эта страница предназначена для быстрого доступа пациента по QR-коду.
+          Не содержит персональных данных и используется как памятка между визитами.
+        </div>
+        <div class="cols" style="margin-top:12px">
+          <div>
+            <div class="muted"><b>Что делать ежедневно</b></div>
+            <ul>
+              <li>измерять артериальное давление утром и вечером;</li>
+              <li>фиксировать показатели в дневнике АД;</li>
+              <li>принимать препараты строго по назначению.</li>
+            </ul>
+            <div class="muted" style="margin-top:8px"><b>Когда плановый визит</b></div>
+            <ul>
+              <li>если АД стабильное — 1 раз в 6 месяцев;</li>
+              <li>при подборе лечения — 1 раз в 1–3 месяца;</li>
+              <li>после госпитализации — в течение 14 дней.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="muted"><b>Когда обратиться срочно</b></div>
+            <ul>
+              <li>АД ≥180/110 мм рт. ст.;</li>
+              <li>внезапная слабость, онемение лица или конечностей;</li>
+              <li>резкая боль в груди, выраженная одышка;</li>
+              <li>частые гипертонические кризы.</li>
+            </ul>
+            <div class="muted" style="margin-top:8px"><b>Важно помнить</b></div>
+            <ul>
+              <li>не отменять препараты самостоятельно;</li>
+              <li>брать дневник АД на каждый приём;</li>
+              <li>сообщать врачу о побочных эффектах.</li>
+            </ul>
+          </div>
+        </div>
+        <details>
+          <summary>Как использовать QR-код в проекте</summary>
+          <p>
+            QR-код размещается в приложении к проекту, на чек-листе приёма или в кабинете врача.
+            Ссылка ведёт на эту страницу и открывается на любом смартфоне без авторизации.
+          </p>
+        </details>
+      </section>
+
+      <footer>
+      <div>© Регламент ДН по ГБ • v1.0 • <span id="today2"></span></div>
+      <div>БУ "Югорская городская больница"</div>
+    </footer>
+  </div>
+
+  <script>
+    let currentMode = 'doctor';
+    const doctorSections = ['duties','diagnostics','decomp','consults','hospital','docs','effectiveness'];
+    const patientSections = ['homebp','visits','goals'];
+
+    function setMode(mode){
+      currentMode = mode;
+      doctorSections.forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display = mode==='doctor'?'block':'none'; });
+      patientSections.forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display = mode==='patient'?'block':'none'; });
+    }
+
+    const d = new Date();
+    const fmt = new Intl.DateTimeFormat('ru-RU', { year:'numeric', month:'2-digit', day:'2-digit' });
+    document.getElementById('today').textContent = fmt.format(d);
+    setMode('doctor');
+
+    document.getElementById('modeDoctor').addEventListener('click', ()=> setMode('doctor'));
+    document.getElementById('modePatient').addEventListener('click', ()=> setMode('patient'));
+
+    document.getElementById('today2').textContent = fmt.format(d);
+
+    // Search highlight
+    const q = document.getElementById('q');
+
+    function clearHighlights(){
+      document.querySelectorAll('mark.__hl').forEach(m=>{
+        const t = document.createTextNode(m.textContent);
+        m.replaceWith(t);
+      });
+    }
+
+    function highlight(term){
+      if(!term) return;
+      const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+        acceptNode(node){
+          if(!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+          const p = node.parentElement;
+          if(!p) return NodeFilter.FILTER_REJECT;
+          const tag = p.tagName.toLowerCase();
+          if(['script','style','input','textarea'].includes(tag)) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+
+      const re = new RegExp(term.replace(/[.*+?^${}()|[\]\]/g, '\$&'), 'gi');
+      const nodes = [];
+      while(walk.nextNode()) nodes.push(walk.currentNode);
+
+      nodes.forEach(node=>{
+        if(!re.test(node.nodeValue)) return;
+        const span = document.createElement('span');
+        span.innerHTML = node.nodeValue.replace(re, m=>`<mark class="__hl" style="background:rgba(110,231,255,.25); color:inherit; padding:0 2px; border-radius:6px;">${m}</mark>`);
+        node.replaceWith(span);
+      });
+    }
+
+    q.addEventListener('input', ()=>{
+      clearHighlights();
+      const term = q.value.trim();
+      if(term.length < 2) return;
+      highlight(term);
+    });
+
+    // Checklist controls
+    const cbs = () => Array.from(document.querySelectorAll('input.cb'));
+    document.getElementById('btnCheckAll').addEventListener('click', ()=> cbs().forEach(x=>x.checked=true));
+    document.getElementById('btnUncheckAll').addEventListener('click', ()=> cbs().forEach(x=>x.checked=false));
+
+    // Show BP diary (30 days)
+    document.getElementById('btnShowBP')?.addEventListener('click', ()=>{
+      const box = document.getElementById('bpPreview');
+      if(!box) return;
+      if(box.innerHTML.trim()===''){
+        const rows = Array.from({length:30}).map((_,i)=>
+          `<tr><td>${i+1}</td><td>утро</td><td></td><td></td><td></td><td></td></tr>`+
+          `<tr><td>${i+1}</td><td>вечер</td><td></td><td></td><td></td><td></td></tr>`
+        ).join('');
+        box.innerHTML = `
+          <table aria-label="Дневник АД (30 дней)">
+            <thead>
+              <tr><th>День</th><th>Время</th><th>АД</th><th>Пульс</th><th>Самочувствие</th><th>Комментарий</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>`;
+      }
+      box.style.display = box.style.display==='none' ? 'block' : 'none';
+    });
+
+    // Download BP diary (30 days)
+    document.getElementById('btnDownloadBP')?.addEventListener('click', ()=>{
+      const w = window.open('', '_blank');
+      const rows = Array.from({length:30}).map(()=>
+        '<tr><td>&nbsp;</td><td>утро</td><td></td><td></td><td></td><td></td></tr>'+
+        '<tr><td>&nbsp;</td><td>вечер</td><td></td><td></td><td></td><td></td></tr>'
+      ).join('');
+      w.document.write(`<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>Дневник артериального давления (30 дней)</title>
+      <style>
+        body{font-family:Arial, sans-serif; margin:24px}
+        h1{font-size:18px}
+        table{width:100%; border-collapse:collapse; margin-top:16px}
+        th,td{border:1px solid #000; padding:6px; font-size:11px; text-align:center}
+        .small{font-size:11px}
+      </style></head><body>
+      <h1>Дневник артериального давления (30 дней)</h1>
+      <div class="small">ФИО: ____________ &nbsp;&nbsp; Период: ____________________________</div>
+      <table>
+        <tr><th>Дата</th><th>Время</th><th>АД (мм рт. ст.)</th><th>Пульс</th><th>Самочувствие</th><th>Комментарий</th></tr>
+        ${rows}
+      </table>
+      <script>window.print();<\/script>
+      </body></html>`);
+      w.document.close();
+    });
+
+    // Print
+    document.getElementById('btnPrint').addEventListener('click', ()=> window.print());
+
+    // Reset
+    document.getElementById('btnReset').addEventListener('click', ()=>{
+      q.value='';
+      clearHighlights();
+      cbs().forEach(x=>x.checked=false);
+      location.hash = '#top';
+    });
+  </script>
+</body>
+</html>
