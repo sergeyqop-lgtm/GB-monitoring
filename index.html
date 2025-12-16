@@ -688,7 +688,44 @@
       clearHighlights();
       cbs().forEach(x=>x.checked=false);
       location.hash = '#top';
+   <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const doctorSections = ['duties','diagnostics','decomp','consults','hospital','docs','effectiveness'];
+  const patientSections = ['homebp','visits','goals'];
+
+  const btnDoctor = document.getElementById('modeDoctor');
+  const btnPatient = document.getElementById('modePatient');
+
+  function setBtnActive(mode){
+    if (btnDoctor) btnDoctor.style.borderColor = (mode === 'doctor') ? 'rgba(110,231,255,.55)' : '';
+    if (btnPatient) btnPatient.style.borderColor = (mode === 'patient') ? 'rgba(110,231,255,.55)' : '';
+  }
+
+  function showOnly(idsToShow){
+    // показываем только то, что перечислено; остальные из двух списков — скрываем
+    const all = [...new Set([...doctorSections, ...patientSections])];
+    all.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.style.display = idsToShow.includes(id) ? 'block' : 'none';
     });
-  </script>
+  }
+
+  function setMode(mode){
+    localStorage.setItem('gb_mode', mode);
+    setBtnActive(mode);
+    if (mode === 'doctor') showOnly(doctorSections);
+    else showOnly(patientSections);
+  }
+
+  // навешиваем события только если кнопки реально найдены
+  if (btnDoctor) btnDoctor.addEventListener('click', () => setMode('doctor'));
+  if (btnPatient) btnPatient.addEventListener('click', () => setMode('patient'));
+
+  // стартовый режим
+  const saved = localStorage.getItem('gb_mode');
+  setMode(saved === 'patient' ? 'patient' : 'doctor');
+});
+</script>
 </body>
 </html>
