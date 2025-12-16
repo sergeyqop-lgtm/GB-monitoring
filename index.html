@@ -25,11 +25,17 @@
       --warnText:#6b4a00;
       --warnBg:#fff3d6;
 
+      /* High BP (>=140/90) */
       --hiBg:#ffe9de;
       --hiLine:#ffb38a;
 
+      /* Normal */
       --okBg:#e9fff2;
       --okLine:#7dd3a7;
+
+      /* Low BP (SYS<90 or DIA<60) — холодно-голубой */
+      --lowBg:#e8f3ff;
+      --lowLine:#89bfff;
     }
 
     *{box-sizing:border-box}
@@ -45,7 +51,7 @@
     header{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
     .brand{display:flex;flex-direction:column;gap:6px}
     .brand h1{margin:0;font-size:22px;letter-spacing:.2px}
-    .brand p{margin:0;color:var(--muted);font-size:13.5px;max-width:860px;line-height:1.45}
+    .brand p{margin:0;color:var(--muted);font-size:13.5px;max-width:900px;line-height:1.45}
 
     .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 
@@ -86,8 +92,22 @@
       background:rgba(255,255,255,.65);
     }
 
+    .tag{
+      display:inline-flex;gap:6px;align-items:center;
+      padding:6px 10px;border-radius:999px;
+      border:1px solid var(--line);
+      background:#ffffff;
+      font-size:12px;color:var(--muted);
+    }
+    .tag b{color:var(--text)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+
     .grid{display:grid;grid-template-columns:1.25fr .75fr;gap:14px;margin-top:14px}
     @media (max-width: 980px){.grid{grid-template-columns:1fr}}
+
+    /* В режиме Пациент убираем правую колонку, чтобы дневник был шире */
+    body.mode-patient .grid{grid-template-columns:1fr}
+    body.mode-patient #doctorAside{display:none}
 
     .card{
       background:rgba(255,255,255,.92);
@@ -112,20 +132,31 @@
       border-radius:16px;
     }
 
-    .tag{
-      display:inline-flex;gap:6px;align-items:center;
-      padding:6px 10px;border-radius:999px;
-      border:1px solid var(--line);
-      background:#ffffff;
-      font-size:12px;color:var(--muted);
+    /* Таблица: прокрутка + недопущение чрезмерного сжатия */
+    .tableWrap{
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      border-radius:16px;
     }
-    .tag b{color:var(--text)}
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-
-    table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:16px}
+    #bpDiaryTable{
+      min-width: 980px;
+      table-layout: fixed;
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:16px;
+    }
     th,td{border:1px solid var(--line);padding:8px;vertical-align:top}
     th{font-size:12px;color:#194536;background:var(--chip2);text-align:left}
     td{font-size:12px;background:#ffffff}
+
+    /* расширение колонок */
+    #bpDiaryTable th:nth-child(2){width:170px !important;} /* Дата */
+    #bpDiaryTable th:nth-child(3),
+    #bpDiaryTable th:nth-child(5){width:150px !important;} /* АД */
+    #bpDiaryTable th:nth-child(4),
+    #bpDiaryTable th:nth-child(6){width:110px !important;} /* Пульс */
 
     input{
       width:100%;
@@ -135,6 +166,7 @@
       background:#ffffff;
       color:var(--text);
       outline:none;
+      font-variant-numeric: tabular-nums;
     }
     input::placeholder{color:#7a9a8d}
     input:focus{
@@ -142,8 +174,15 @@
       box-shadow:0 0 0 4px rgba(125,211,167,.25);
     }
 
+    #bpDiaryTable input{ text-align:center; }
+    #bpDiaryTable input[data-k="m_bp"],
+    #bpDiaryTable input[data-k="e_bp"]{ min-width:110px; }
+    #bpDiaryTable input[data-k="m_hr"],
+    #bpDiaryTable input[data-k="e_hr"]{ min-width:80px; }
+
     .field-hi input{background:var(--hiBg);border-color:var(--hiLine)}
     .field-ok input{background:var(--okBg);border-color:var(--okLine)}
+    .field-low input{background:var(--lowBg);border-color:var(--lowLine)}
 
     .table-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
 
@@ -159,6 +198,7 @@
     .kpi .val{font-size:18px;font-weight:900;margin-top:4px}
     .small{font-size:12px;color:var(--muted)}
 
+    /* Doctor import */
     .drop{
       border:2px dashed var(--line);
       background:rgba(231,245,238,.55);
@@ -172,13 +212,12 @@
     }
     .drop h3{margin:0 0 6px;font-size:14px}
     .drop p{margin:0;color:var(--muted);font-size:13px;line-height:1.35}
-    .drop .row{margin-top:10px}
 
     .footer{margin-top:16px;color:var(--muted);font-size:12px}
   </style>
 </head>
 
-<body>
+<body class="mode-doctor">
   <div class="wrap">
     <header>
       <div class="brand">
@@ -195,7 +234,7 @@
       <div class="toolbar">
         <button class="btn active" id="modeDoctor" type="button" aria-pressed="true">Врач</button>
         <button class="btn" id="modePatient" type="button" aria-pressed="false">Пациент</button>
-        <button class="btn secondary" id="btnReset" type="button" title="Сбросить локальные данные дневника пациента на этом устройстве">Сбросить дневник</button>
+        <button class="btn secondary" id="btnReset" type="button" title="Сбросить локальные данные дневника на этом устройстве">Сбросить дневник</button>
       </div>
     </header>
 
@@ -203,7 +242,9 @@
       <!-- LEFT -->
       <section class="card">
         <h2>Дневник АД (30 дней)</h2>
-        <p>Заполнение для пациента. Экспорт CSV — для передачи врачу. Формат АД: <span class="mono">120/80</span>.</p>
+        <p>
+          Заполнение для пациента. Формат АД: <span class="mono">120/80</span>. Низкое АД (САД&lt;90 или ДАД&lt;60) подсвечивается холодно-голубым.
+        </p>
 
         <div class="row">
           <button class="btn" id="toggleDiary" type="button">Открыть дневник</button>
@@ -212,25 +253,29 @@
         </div>
 
         <div id="bpDiary" hidden style="margin-top:12px">
-          <div class="note">Данные сохраняются автоматически. Подсветка отмечает ≥140/90.</div>
+          <div class="note">
+            Подсветка: низкое (САД&lt;90 или ДАД&lt;60) — голубой; повышенное (≥140/90) — персиковый; прочее — зелёный.
+          </div>
 
           <div class="hr"></div>
 
-          <table id="bpDiaryTable">
-            <thead>
-              <tr>
-                <th style="width:54px">День</th>
-                <th style="width:140px">Дата</th>
-                <th style="width:130px">Утро АД</th>
-                <th style="width:110px">Пульс</th>
-                <th style="width:130px">Вечер АД</th>
-                <th style="width:110px">Пульс</th>
-                <th>Самочувствие</th>
-                <th>Комментарий</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+          <div class="tableWrap">
+            <table id="bpDiaryTable">
+              <thead>
+                <tr>
+                  <th style="width:54px">День</th>
+                  <th>Дата</th>
+                  <th>Утро АД</th>
+                  <th>Пульс</th>
+                  <th>Вечер АД</th>
+                  <th>Пульс</th>
+                  <th>Самочувствие</th>
+                  <th>Комментарий</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
 
           <div class="table-actions">
             <button class="btn" id="downloadDiaryCsv" type="button">Скачать заполненный (CSV)</button>
@@ -249,60 +294,57 @@
               <div class="small" id="avgEveningNote"></div>
             </div>
             <div class="mini">
-              <div class="small">Превышений (≥140/90)</div>
-              <div class="val" id="highCount">—</div>
-              <div class="small">по каждому измерению</div>
+              <div class="small">Эпизоды</div>
+              <div class="val" id="episodes">—</div>
+              <div class="small">низкое / ≥140/90</div>
             </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="note warn">
+            При симптомах поражения органов-мишеней (боль в груди, неврологический дефицит, выраженная одышка и т.п.) — действовать по неотложным алгоритмам.
           </div>
         </div>
       </section>
 
-      <!-- RIGHT -->
-      <aside class="card">
+      <!-- RIGHT (Doctor tools) -->
+      <aside class="card" id="doctorAside">
         <h2>Инструменты врача</h2>
 
-        <section data-role="doctor">
-          <div class="drop" id="dropZone">
-            <h3>Загрузка дневника пациента (CSV)</h3>
-            <p>Перетащите файл сюда или выберите его. После загрузки будет рассчитано среднее АД за период наблюдения.</p>
+        <div class="drop" id="dropZone">
+          <h3>Загрузка дневника пациента (CSV)</h3>
+          <p>Перетащите файл сюда или выберите его. Будут рассчитаны средние значения за период наблюдения.</p>
 
-            <div class="row">
-              <input id="csvFile" type="file" accept=".csv,text/csv" />
-              <button class="btn secondary" id="btnClearImport" type="button">Очистить</button>
-            </div>
+          <div class="row" style="margin-top:10px">
+            <input id="csvFile" type="file" accept=".csv,text/csv" />
+            <button class="btn secondary" id="btnClearImport" type="button">Очистить</button>
           </div>
+        </div>
 
-          <div class="hr"></div>
+        <div class="hr"></div>
 
-          <div class="kpi" id="docKpi">
-            <div class="mini">
-              <div class="small">Среднее АД за период (все измерения)</div>
-              <div class="val" id="docAvgAll">—</div>
-              <div class="small" id="docAvgAllNote"></div>
-            </div>
-            <div class="mini">
-              <div class="small">Среднее утро / вечер</div>
-              <div class="val" id="docAvgME">—</div>
-              <div class="small" id="docAvgMENote"></div>
-            </div>
-            <div class="mini">
-              <div class="small">Период и объём данных</div>
-              <div class="val" id="docPeriod">—</div>
-              <div class="small" id="docCounts">—</div>
-            </div>
+        <div class="kpi">
+          <div class="mini">
+            <div class="small">Среднее АД за период (все измерения)</div>
+            <div class="val" id="docAvgAll">—</div>
+            <div class="small" id="docAvgAllNote"></div>
           </div>
+          <div class="mini">
+            <div class="small">Среднее утро / вечер</div>
+            <div class="val" id="docAvgME">—</div>
+            <div class="small" id="docAvgMENote"></div>
+          </div>
+          <div class="mini">
+            <div class="small">Период и объём данных</div>
+            <div class="val" id="docPeriod">—</div>
+            <div class="small" id="docCounts">—</div>
+          </div>
+        </div>
 
-          <div class="hr"></div>
+        <div class="hr"></div>
 
-          <div class="note warn" id="docWarn" hidden></div>
-        </section>
-
-        <section data-role="patient" hidden>
-          <h2>Пациент</h2>
-          <p style="margin:0;color:var(--muted);font-size:13.5px;line-height:1.5">
-            Заполняйте дневник и отправляйте врачу CSV (кнопка «Скачать заполненный (CSV)»).
-          </p>
-        </section>
+        <div class="note warn" id="docWarn" hidden></div>
       </aside>
     </div>
 
@@ -312,23 +354,47 @@
   <script>
   (function () {
     // -----------------------
+    // Thresholds for "soft validation"
+    // -----------------------
+    const LOW_SYS = 90;
+    const LOW_DIA = 60;
+    const HIGH_SYS = 140;
+    const HIGH_DIA = 90;
+
+    // -----------------------
     // Helpers
     // -----------------------
     function parseBP(bp) {
-      const m = String(bp || "").trim().match(/^(\d{2,3})\s*\/\s*(\d{2,3})$/);
+      const m = String(bp || "").trim().match(/^(\d{1,3})\s*\/\s*(\d{1,3})$/);
       if (!m) return null;
       const sys = Number(m[1]), dia = Number(m[2]);
       if (!Number.isFinite(sys) || !Number.isFinite(dia)) return null;
       return { sys, dia };
     }
-    function isHigh(bpObj){ return bpObj && (bpObj.sys >= 140 || bpObj.dia >= 90); }
+    function isLow(bpObj){ return bpObj && (bpObj.sys < LOW_SYS || bpObj.dia < LOW_DIA); }
+    function isHigh(bpObj){ return bpObj && (bpObj.sys >= HIGH_SYS || bpObj.dia >= HIGH_DIA); }
 
+    // Исправленная нормализация: поддержка 80/40 (и ввод "8040" -> "80/40")
     function normalizeBP(value){
-      const raw = String(value || "");
-      const digits = raw.replace(/[^\d]/g, "");
-      if (digits.length === 0) return "";
-      if (digits.length <= 3) return digits;
-      return digits.slice(0,3) + "/" + digits.slice(3,6);
+      const raw = String(value || "").trim();
+
+      if (raw.includes("/")) {
+        const [a,b] = raw.split("/", 2);
+        const sys = (a || "").replace(/[^\d]/g, "").slice(0,3);
+        const dia = (b || "").replace(/[^\d]/g, "").slice(0,3);
+        if (!sys && !dia) return "";
+        if (!dia) return sys + "/";
+        return sys + "/" + dia;
+      }
+
+      const d = raw.replace(/[^\d]/g, "");
+      const n = d.length;
+      if (n === 0) return "";
+      if (n <= 3) return d;
+
+      if (n === 4) return d.slice(0,2) + "/" + d.slice(2,4);  // 8040 -> 80/40
+      if (n === 5) return d.slice(0,3) + "/" + d.slice(3,5);  // 12080 -> 120/80
+      return d.slice(0,3) + "/" + d.slice(3,6);               // 6+ -> 3/3
     }
 
     function fmtAvg(sysSum, diaSum, n){
@@ -337,10 +403,8 @@
     }
 
     function safeDateStr(s){
-      // ожидаем YYYY-MM-DD
       const v = String(s||"").trim();
       if (!v) return null;
-      // минимальная проверка
       if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return null;
       return v;
     }
@@ -355,8 +419,8 @@
 
     function applyMode(mode) {
       const isDoctor = mode === "doctor";
-      document.querySelectorAll("[data-role='doctor']").forEach(el => el.hidden = !isDoctor);
-      document.querySelectorAll("[data-role='patient']").forEach(el => el.hidden = isDoctor);
+      document.body.classList.toggle("mode-doctor", isDoctor);
+      document.body.classList.toggle("mode-patient", !isDoctor);
 
       btnD?.classList.toggle("active", isDoctor);
       btnP?.classList.toggle("active", !isDoctor);
@@ -376,7 +440,7 @@
     // -----------------------
     // Patient diary (30 days)
     // -----------------------
-    const KEY_DIARY = "gb_bp_diary_v3";
+    const KEY_DIARY = "gb_bp_diary_v4";
     const wrap = document.getElementById("bpDiary");
     const btnToggle = document.getElementById("toggleDiary");
     const tbody = document.querySelector("#bpDiaryTable tbody");
@@ -410,41 +474,61 @@
       });
       return data;
     }
+
     function applyHighlightRow(tr){
       if (!tr) return;
       const mInp = tr.querySelector("input[data-k='m_bp']");
       const eInp = tr.querySelector("input[data-k='e_bp']");
-      const mCell = mInp?.closest(".bp-cell");
-      const eCell = eInp?.closest(".bp-cell");
+      const mCell = mInp?.closest(".bp-cell") || mInp?.parentElement;
+      const eCell = eInp?.closest(".bp-cell") || eInp?.parentElement;
 
-      mCell?.classList.remove("field-hi","field-ok");
-      eCell?.classList.remove("field-hi","field-ok");
+      mCell?.classList.remove("field-low","field-hi","field-ok");
+      eCell?.classList.remove("field-low","field-hi","field-ok");
 
       const mb = parseBP(mInp?.value);
       const eb = parseBP(eInp?.value);
 
-      if (mb) mCell?.classList.add(isHigh(mb) ? "field-hi" : "field-ok");
-      if (eb) eCell?.classList.add(isHigh(eb) ? "field-hi" : "field-ok");
+      if (mb){
+        if (isLow(mb)) mCell?.classList.add("field-low");
+        else if (isHigh(mb)) mCell?.classList.add("field-hi");
+        else mCell?.classList.add("field-ok");
+      }
+      if (eb){
+        if (isLow(eb)) eCell?.classList.add("field-low");
+        else if (isHigh(eb)) eCell?.classList.add("field-hi");
+        else eCell?.classList.add("field-ok");
+      }
     }
+
     function updatePatientStats() {
       const data = ensureDiarySize(loadDiary(), 30);
+
       let ms=0, md=0, mc=0;
       let es=0, ed=0, ec=0;
-      let high=0;
+
+      let low=0, high=0;
 
       for (const r of data) {
         const mb = parseBP(r.m_bp);
         const eb = parseBP(r.e_bp);
-        if (mb){ ms+=mb.sys; md+=mb.dia; mc++; if (isHigh(mb)) high++; }
-        if (eb){ es+=eb.sys; ed+=eb.dia; ec++; if (isHigh(eb)) high++; }
+
+        if (mb){
+          ms+=mb.sys; md+=mb.dia; mc++;
+          if (isLow(mb)) low++;
+          if (isHigh(mb)) high++;
+        }
+        if (eb){
+          es+=eb.sys; ed+=eb.dia; ec++;
+          if (isLow(eb)) low++;
+          if (isHigh(eb)) high++;
+        }
       }
 
       document.getElementById("avgMorning").textContent = fmtAvg(ms,md,mc);
       document.getElementById("avgEvening").textContent = fmtAvg(es,ed,ec);
-      document.getElementById("highCount").textContent = String(high);
-
       document.getElementById("avgMorningNote").textContent = mc ? `учтено измерений: ${mc}` : "";
       document.getElementById("avgEveningNote").textContent = ec ? `учтено измерений: ${ec}` : "";
+      document.getElementById("episodes").textContent = `${low} / ${high}`;
     }
 
     function buildDiary() {
@@ -567,14 +651,12 @@
       setDocKpi({avgAll:"—", avgM:"—", avgE:"—", period:"—", counts:"—", noteAll:"", noteME:""});
     }
 
-    // простейший CSV парсер под наш формат (разделитель ; или ,)
     function parseCsvText(text){
       const lines = text.replace(/\r/g,"").split("\n").filter(l => l.trim().length > 0);
       if (!lines.length) return {headers:[], rows:[]};
 
       const sep = lines[0].includes(";") ? ";" : ",";
       const rows = lines.map(line => {
-        // поддержка кавычек без сложной экзотики
         const out = [];
         let cur = "", inQ = false;
         for (let i=0;i<line.length;i++){
@@ -601,7 +683,6 @@
       const {headers, rows} = parseCsvText(csvText);
       if (!headers.length) throw new Error("Пустой CSV.");
 
-      // ожидаемые колонки (точные названия из нашего экспорта)
       const iDate = idxOf(headers, "Дата");
       const iMBP  = idxOf(headers, "Утро АД");
       const iEBP  = idxOf(headers, "Вечер АД");
@@ -613,7 +694,8 @@
       let allSys=0, allDia=0, allN=0;
       let mSys=0, mDia=0, mN=0;
       let eSys=0, eDia=0, eN=0;
-      let high=0;
+
+      let low=0, high=0;
 
       let minDate=null, maxDate=null;
       let dateCount=0;
@@ -632,11 +714,13 @@
         if (mb){
           mSys += mb.sys; mDia += mb.dia; mN++;
           allSys += mb.sys; allDia += mb.dia; allN++;
+          if (isLow(mb)) low++;
           if (isHigh(mb)) high++;
         }
         if (eb){
           eSys += eb.sys; eDia += eb.dia; eN++;
           allSys += eb.sys; allDia += eb.dia; allN++;
+          if (isLow(eb)) low++;
           if (isHigh(eb)) high++;
         }
       }
@@ -646,7 +730,7 @@
       const avgE = fmtAvg(eSys, eDia, eN);
 
       const period = (minDate && maxDate) ? `${minDate} — ${maxDate}` : "—";
-      const counts = `дней с датой: ${dateCount}; измерений: ${allN}; превышений ≥140/90: ${high}`;
+      const counts = `дней с датой: ${dateCount}; измерений: ${allN}; низкое: ${low}; ≥140/90: ${high}`;
 
       return {
         avgAll, avgM, avgE,
@@ -677,9 +761,7 @@
 
     btnClearImport?.addEventListener("click", clearImportUI);
 
-    // drag&drop
     function prevent(e){ e.preventDefault(); e.stopPropagation(); }
-
     ["dragenter","dragover"].forEach(ev => dropZone?.addEventListener(ev, (e) => {
       prevent(e);
       dropZone.classList.add("dragover");
@@ -688,20 +770,15 @@
       prevent(e);
       dropZone.classList.remove("dragover");
     }));
-
     dropZone?.addEventListener("drop", async (e) => {
       const file = e.dataTransfer?.files?.[0];
-      if (file) {
-        // отразим в input (не обязательно, но удобно)
-        await handleFile(file);
-      }
+      if (file) await handleFile(file);
     });
 
-    // init patient stats
+    // init
     updatePatientStats();
     clearImportUI();
   })();
   </script>
 </body>
 </html>
-
