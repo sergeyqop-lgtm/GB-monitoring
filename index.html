@@ -1,531 +1,330 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <title>Умная система удалённого мониторинга артериального давления</title>
-
-  <style>
-    :root{
-      --bg1:#f2fbf6;
-      --bg2:#eaf5ef;
-      --card:#ffffff;
-      --text:#123328;
-      --muted:#4f6f62;
-      --line:#cfe3d8;
-
-      --btn:#3a8f6a;
-      --btn2:#2f7c5c;
-
-      --okBg:#e9fff2;
-      --okLine:#7dd3a7;
-
-      --hiBg:#ffe9de;
-      --hiLine:#ffb38a;
-
-      --lowBg:#e8f3ff;
-      --lowLine:#89bfff;
-    }
-
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:linear-gradient(135deg,var(--bg1),var(--bg2));
-      color:var(--text);
-    }
-    .wrap{max-width:1200px;margin:0 auto;padding:20px}
-
-    header{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
-    h1{margin:0;font-size:24px}
-    .subtitle{color:var(--muted);font-size:14px;max-width:920px;line-height:1.45}
-    .org{font-size:13px;color:var(--muted);margin-top:4px}
-
-    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .btn{
-      background:var(--btn);
-      color:#fff;
-      border:none;
-      padding:10px 14px;
-      border-radius:14px;
-      font-weight:700;
-      cursor:pointer;
-      transition:transform .06s ease, background .12s ease;
-      white-space:nowrap;
-    }
-    .btn:hover{background:var(--btn2)}
-    .btn:active{transform:translateY(1px)}
-    .btn.secondary{
-      background:transparent;
-      color:var(--text);
-      border:1px solid var(--line);
-    }
-    .btn.active{background:var(--btn2)}
-
-    .badge{
-      padding:6px 10px;
-      border:1px solid var(--line);
-      border-radius:999px;
-      color:var(--muted);
-      font-size:12px;
-      background:rgba(255,255,255,.65);
-    }
-
-    .grid{display:grid;grid-template-columns:1.3fr .7fr;gap:14px;margin-top:14px}
-    @media (max-width: 980px){.grid{grid-template-columns:1fr}}
-
-    body.mode-patient .grid{grid-template-columns:1fr}
-    body.mode-patient #doctorAside{display:none}
-
-    .card{
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:20px;
-      padding:16px;
-      box-shadow:0 12px 28px rgba(0,0,0,.08)
-    }
-
-    .note{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.45}
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-
-    .tableWrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:16px}
-    table{min-width:1050px;width:100%;border-collapse:collapse}
-    th,td{border:1px solid var(--line);padding:8px;text-align:center;font-size:13px}
-    th{background:#e2f1ea;text-align:center}
-
-    input{
-      width:100%;
-      padding:8px;
-      border-radius:10px;
-      border:1px solid var(--line);
-      text-align:center;
-      font-variant-numeric:tabular-nums;
-      background:#fff;
-      outline:none;
-    }
-    input:focus{border-color:#7dd3a7;box-shadow:0 0 0 4px rgba(125,211,167,.25)}
-
-    .field-ok input{background:var(--okBg);border-color:var(--okLine)}
-    .field-hi input, .field-high input{background:var(--hiBg);border-color:var(--hiLine)}
-    .field-low input{background:var(--lowBg);border-color:var(--lowLine)}
-
-    .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
-    @media (max-width: 900px){.kpi{grid-template-columns:1fr}}
-    .kpi .mini{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px}
-    .val{font-size:18px;font-weight:800}
-
-    canvas{width:100%;height:260px}
-
-    .footer{margin-top:20px;font-size:12px;color:var(--muted);line-height:1.45}
-
-    .col-day{width:60px}
-    .col-date{width:170px}
-    .col-bp{width:170px}
-    .col-hr{width:120px}
-    .col-note{min-width:240px}
-
-    @media print{
-      body{background:#fff}
-      header, .grid > section.card, #toggleChart, #togglePatientChart, #csvFile, #btnClearImport, .toolbar .btn, .badge{display:none !important}
-      #doctorAside{display:block !important;box-shadow:none;border:none}
-      .wrap{max-width:100%;padding:0}
-      .card{border:none;box-shadow:none}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Умная система удалённого мониторинга АД</title>
+<style>
+:root{
+  --bg1:#f2fbf6;
+  --bg2:#eaf5ef;
+  --card:#ffffff;
+  --text:#123328;
+  --muted:#4f6f62;
+  --line:#cfe3d8;
+  --btn:#3a8f6a;
+  --btn2:#2f7c5c;
+  --okBg:#e9fff2;
+  --okLine:#7dd3a7;
+  --hiBg:#ffe9de;
+  --hiLine:#ffb38a;
+  --lowBg:#e8f3ff;
+  --lowLine:#89bfff;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:var(--text);}
+.wrap{max-width:1200px;margin:0 auto;padding:20px;}
+header{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+h1{margin:0;font-size:24px;}
+.subtitle{color:var(--muted);font-size:14px;max-width:920px;line-height:1.45;}
+.org{font-size:13px;color:var(--muted);margin-top:4px;}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.btn{background:var(--btn);color:#fff;border:none;padding:10px 14px;border-radius:14px;font-weight:700;cursor:pointer;transition:transform .06s ease, background .12s ease;white-space:nowrap;}
+.btn:hover{background:var(--btn2);}
+.btn:active{transform:translateY(1px);}
+.btn.secondary{background:transparent;color:var(--text);border:1px solid var(--line);}
+.btn.active{background:var(--btn2);}
+.badge{padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px;background:rgba(255,255,255,.65);}
+.grid{display:grid;grid-template-columns:1.3fr .7fr;gap:14px;margin-top:14px;}
+@media (max-width: 980px){.grid{grid-template-columns:1fr;}}
+body.mode-patient .grid{grid-template-columns:1fr;}
+body.mode-patient .doctor-only{display:none !important;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 12px 28px rgba(0,0,0,.08);}
+.note{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.45;}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;}
+.tableWrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:16px;}
+table{min-width:1050px;width:100%;border-collapse:collapse;}
+th,td{border:1px solid var(--line);padding:8px;text-align:center;font-size:13px;}
+th{background:#e2f1ea;text-align:center;}
+input{width:100%;padding:8px;border-radius:10px;border:1px solid var(--line);text-align:center;font-variant-numeric:tabular-nums;background:#fff;outline:none;}
+input:focus{border-color:#7dd3a7;box-shadow:0 0 0 4px rgba(125,211,167,.25);}
+.field-ok input{background:var(--okBg);border-color:var(--okLine);}
+.field-hi input,.field-high input{background:var(--hiBg);border-color:var(--hiLine);}
+.field-low input{background:var(--lowBg);border-color:var(--lowLine);}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;}
+@media (max-width:900px){.kpi{grid-template-columns:1fr;}}
+.kpi .mini{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;}
+.val{font-size:18px;font-weight:800;}
+canvas{width:100%;height:260px;}
+.footer{margin-top:20px;font-size:12px;color:var(--muted);line-height:1.45;}
+.col-day{width:60px;}
+.col-date{width:170px;}
+.col-bp{width:170px;}
+.col-hr{width:120px;}
+.col-note{min-width:240px;}
+@media print{
+  body{background:#fff;}
+  header,.grid>section.card,#toggleChart,#togglePatientChart,#csvFile,#btnClearImport,.toolbar .btn,.badge{display:none !important;}
+  .doctor-only{display:block !important;}
+  .wrap{max-width:100%;padding:0;}
+  .card{border:none;box-shadow:none;}
+}
+</style>
 </head>
-
 <body class="mode-doctor">
 <div class="wrap">
+<header>
+<div>
+<h1>Умная система удалённого мониторинга артериального давления</h1>
+<div class="subtitle">Для пациента и врача: дневник самоконтроля и аналитическая сводка за период наблюдения.</div>
+<div class="org">БУ «Югорская городская больница»</div>
+<div class="toolbar" style="margin-top:10px">
+<span class="badge">Данные не передаются на сервер и сохраняются локально в браузере</span>
+</div>
+</div>
+<div class="toolbar">
+<button class="btn active" id="modeDoctor" type="button">Врач</button>
+<button class="btn" id="modePatient" type="button">Пациент</button>
+<button class="btn secondary" id="btnReset" type="button" title="Сбросить данные дневника на этом устройстве">Сбросить данные</button>
+</div>
+</header>
 
-  <header>
-    <div>
-      <h1>Умная система удалённого мониторинга артериального давления</h1>
-      <div class="subtitle">Для пациента и врача: дневник самоконтроля и аналитическая сводка за период наблюдения.</div>
-      <div class="org">БУ «Югорская городская больница»</div>
-      <div class="toolbar" style="margin-top:10px">
-        <span class="badge">Данные не передаются на сервер и сохраняются локально в браузере</span>
-      </div>
-    </div>
+<div class="grid">
+<!-- ЛЕВАЯ КОЛОНКА: ДНЕВНИК ПАЦИЕНТА -->
+<section class="card">
+<h2>Дневник артериального давления (30 дней)</h2>
+<div class="subtitle" style="margin-top:6px;">
+Формат АД: <span class="mono">120/80</span>. Можно вводить без слеша: <span class="mono">12080 → 120/80</span>, <span class="mono">8040 → 80/40</span>.<br>
+Мягкие ориентиры: низкие значения (САД < 90 или ДАД < 60) — голубой; превышение ≥140/90 — персиковый.<br>
+Пульс: <50 и >100 — мягкая подсветка.
+</div>
+<div class="toolbar" style="margin-top:10px;">
+<button class="btn secondary" id="toggleDiary" type="button">Показать дневник</button>
+<a class="btn secondary" href="#" download>Скачать PDF</a>
+<a class="btn secondary" href="#" download>Скачать XLSX</a>
+<button class="btn" id="exportCsv" type="button">Скачать CSV</button>
+</div>
 
-    <div class="toolbar">
-      <button class="btn active" id="modeDoctor" type="button">Врач</button>
-      <button class="btn" id="modePatient" type="button">Пациент</button>
-      <button class="btn secondary" id="btnReset" type="button" title="Сбросить данные дневника на этом устройстве">Сбросить данные на этом устройстве</button>
-    </div>
-  </header>
+<div id="diary" hidden style="margin-top:12px;">
+<div class="note">Данные сохраняются локально в браузере пользователя. Передача на сервер не выполняется.</div>
+<div class="tableWrap" style="margin-top:10px;">
+<table id="bpDiaryTable">
+<thead>
+<tr>
+<th class="col-day">День</th>
+<th class="col-date">Дата</th>
+<th class="col-bp">Утро АД</th>
+<th class="col-hr">Пульс</th>
+<th class="col-bp">Вечер АД</th>
+<th class="col-hr">Пульс</th>
+<th class="col-note">Комментарий</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+<div class="toolbar" style="margin-top:10px;">
+<button class="btn secondary" id="btnRecalcPatient" type="button">Пересчитать сводку</button>
+<span class="badge">Подсветка — только ориентиры, без диагнозов</span>
+</div>
+<div class="kpi" style="margin-top:10px;">
+<div class="mini">
+<div class="val" id="p_avg_m">—</div>
+<div class="note">Среднее утро (САД/ДАД)</div>
+<div class="note" id="p_avg_m_note"></div>
+</div>
+<div class="mini">
+<div class="val" id="p_avg_e">—</div>
+<div class="note">Среднее вечер (САД/ДАД)</div>
+<div class="note" id="p_avg_e_note"></div>
+</div>
+<div class="mini">
+<div class="val" id="p_events">—</div>
+<div class="note">Эпизоды: низкое / ≥140/90</div>
+<div class="note" id="p_pulse_events"></div>
+</div>
+</div>
+<div class="toolbar" style="margin-top:10px;">
+<button class="btn secondary" id="togglePatientChart" type="button">Показать график</button>
+</div>
+<div id="patientChartBlock" hidden style="margin-top:10px;">
+<canvas id="patientChart" width="1000" height="320" style="border:1px solid var(--line);border-radius:14px;"></canvas>
+<div class="note" style="margin-top:8px;">График по дням. Линии-ориентиры: 140/90.</div>
+</div>
+<div class="note" style="margin-top:10px;">
+Рекомендуемый порядок: пациент выгружает CSV и передаёт врачу. Врач загружает файл и получает аналитическую сводку за период.
+</div>
+</div>
+</section>
 
-  <div class="grid">
+<!-- ПРАВАЯ КОЛОНКА: ИНСТРУМЕНТЫ ВРАЧА -->
+<aside class="card doctor-only" id="doctorAside">
+<h2>Инструменты врача</h2>
+<div class="subtitle" style="margin-top:6px;">
+Загрузите CSV, полученный от пациента. Сводка рассчитывается автоматически. Формулировки — только ориентиры, без диагнозов.
+</div>
+<div class="toolbar" style="margin-top:10px;">
+<input id="csvFile" type="file" accept=".csv,text/csv" style="max-width:340px;">
+<button class="btn secondary" id="btnClearImport" type="button">Очистить</button>
+<button class="btn secondary" id="btnPrint" type="button">Печать отчёта</button>
+</div>
+<div class="note" style="margin-top:8px;">
+Ожидается CSV из этого дневника (разделитель «;»). Колонки: «Дата», «Утро АД», «Утро пульс», «Вечер АД», «Вечер пульс».
+</div>
+<div class="kpi" style="margin-top:12px;">
+<div class="mini">
+<div class="val" id="d_avg_all">—</div>
+<div class="note">Среднее АД за период (все измерения)</div>
+<div class="note" id="d_avg_all_note"></div>
+</div>
+<div class="mini">
+<div class="val" id="d_avg_me">—</div>
+<div class="note">Среднее утро / вечер</div>
+<div class="note" id="d_avg_me_note"></div>
+</div>
+<div class="mini">
+<div class="val" id="d_period">—</div>
+<div class="note">Период наблюдения</div>
+<div class="note" id="d_counts">—</div>
+</div>
+</div>
+<div class="kpi" style="margin-top:10px;">
+<div class="mini">
+<div class="val" id="d_minmax">—</div>
+<div class="note">Минимум / максимум АД</div>
+</div>
+<div class="mini">
+<div class="val" id="d_median">—</div>
+<div class="note">Медианное АД</div>
+</div>
+<div class="mini">
+<div class="val" id="d_range">—</div>
+<div class="note">Разброс значений (макс − мин)</div>
+</div>
+</div>
+<div class="kpi" style="margin-top:10px;">
+<div class="mini">
+<div class="val" id="d_percent_high">—</div>
+<div class="note">Процент превышений ≥140/90</div>
+</div>
+<div class="mini">
+<div class="val" id="d_soft_flags">—</div>
+<div class="note">Ориентиры (низкое АД / пульс)</div>
+</div>
+<div class="mini">
+<button class="btn secondary" id="toggleChart" type="button" style="width:100%;">Показать график</button>
+<div class="note" style="margin-top:8px;">График строится по данным CSV. Без внешних библиотек.</div>
+</div>
+</div>
+<div id="chartBlock" hidden style="margin-top:12px;">
+<canvas id="bpChart" width="900" height="320" style="border:1px solid var(--line);border-radius:14px;"></canvas>
+<div class="toolbar" style="margin-top:10px;">
+<button class="btn secondary" id="chartAll" type="button">Все измерения</button>
+<button class="btn secondary" id="chartMorning" type="button">Только утро</button>
+<button class="btn secondary" id="chartEvening" type="button">Только вечер</button>
+</div>
+<div class="note" style="margin-top:8px;">На графике отображаются САД и ДАД во времени. Горизонтальные линии — ориентиры 140/90.</div>
+</div>
+<div class="note" id="doctorWarn" style="margin-top:12px; display:none; padding:10px 12px; border:1px solid var(--line); border-radius:14px; background:#fff;"></div>
+</aside>
+</div>
 
-    <section class="card">
-      <h2>Дневник артериального давления (30 дней)</h2>
-      <div class="subtitle" style="margin-top:6px;">
-        Формат АД: <span class="mono">120/80</span>. Можно вводить без слеша: <span class="mono">12080 → 120/80</span>, <span class="mono">8040 → 80/40</span>.
-        Мягкие ориентиры: низкие значения (САД &lt; 90 или ДАД &lt; 60) — холодно-голубой; превышение ≥140/90 — персиковый.
-        Пульс: &lt;50 и &gt;100 — мягкая подсветка.
-      </div>
-
-      <div class="toolbar" style="margin-top:10px;">
-        <button class="btn secondary" id="toggleDiary" type="button">Показать дневник</button>
-        <a class="btn secondary" href="assets/bp-diary-30days_ru.pdf" download style="text-decoration:none;">Скачать PDF (шаблон)</a>
-        <a class="btn secondary" href="assets/bp-diary-30days.xlsx" download style="text-decoration:none;">Скачать XLSX (шаблон)</a>
-        <button class="btn" id="exportCsv" type="button">Скачать заполненный дневник (CSV)</button>
-      </div>
-
-      <div id="diary" hidden style="margin-top:12px;">
-        <div class="note">Данные сохраняются локально в браузере пользователя. Передача на сервер не выполняется.</div>
-
-        <div class="tableWrap" style="margin-top:10px;">
-          <table id="bpDiaryTable">
-            <thead>
-              <tr>
-                <th class="col-day">День</th>
-                <th class="col-date">Дата</th>
-                <th class="col-bp">Утро АД</th>
-                <th class="col-hr">Пульс</th>
-                <th class="col-bp">Вечер АД</th>
-                <th class="col-hr">Пульс</th>
-                <th class="col-note">Комментарий</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <div class="toolbar" style="margin-top:10px;">
-          <button class="btn secondary" id="btnRecalcPatient" type="button">Пересчитать сводку</button>
-          <span class="badge">Подсветка — только ориентиры, без диагнозов</span>
-        </div>
-
-        <div class="kpi" style="margin-top:10px;">
-          <div class="mini">
-            <div class="val" id="p_avg_m">—</div>
-            <div class="note">Среднее утро (САД/ДАД)</div>
-            <div class="note" id="p_avg_m_note"></div>
-          </div>
-          <div class="mini">
-            <div class="val" id="p_avg_e">—</div>
-            <div class="note">Среднее вечер (САД/ДАД)</div>
-            <div class="note" id="p_avg_e_note"></div>
-          </div>
-          <div class="mini">
-            <div class="val" id="p_events">—</div>
-            <div class="note">Эпизоды: низкое / ≥140/90</div>
-            <div class="note" id="p_pulse_events"></div>
-          </div>
-        </div>
-
-        <div class="toolbar" style="margin-top:10px;">
-          <button class="btn secondary" id="togglePatientChart" type="button">Показать график</button>
-        </div>
-        <div id="patientChartBlock" hidden style="margin-top:10px;">
-          <canvas id="patientChart" width="1000" height="320" style="border:1px solid var(--line);border-radius:14px;"></canvas>
-          <div class="note" style="margin-top:8px;">График по дням. Линии-ориентиры: 140/90.</div>
-        </div>
-
-        <div class="note" style="margin-top:10px;">
-          Рекомендуемый порядок: пациент выгружает CSV и передаёт врачу. Врач загружает файл и получает аналитическую сводку за период.
-        </div>
-      </div>
-    </section>
-
-    <aside class="card" id="doctorAside">
-      <h2>Инструменты врача</h2>
-      <div class="subtitle" style="margin-top:6px;">
-        Загрузите CSV, полученный от пациента. Сводка рассчитывается автоматически. Формулировки — только ориентиры, без диагнозов.
-      </div>
-
-      <div class="toolbar" style="margin-top:10px;">
-        <input id="csvFile" type="file" accept=".csv,text/csv" style="max-width:340px;">
-        <button class="btn secondary" id="btnClearImport" type="button">Очистить</button>
-        <button class="btn secondary" id="btnPrint" type="button">Печать отчёта</button>
-      </div>
-
-      <div class="note" style="margin-top:8px;">
-        Ожидается CSV из этого дневника (разделитель «;»). Колонки: «Дата», «Утро АД», «Утро пульс», «Вечер АД», «Вечер пульс».
-      </div>
-
-      <div class="kpi" style="margin-top:12px;">
-        <div class="mini">
-          <div class="val" id="d_avg_all">—</div>
-          <div class="note">Среднее АД за период (все измерения)</div>
-          <div class="note" id="d_avg_all_note"></div>
-        </div>
-        <div class="mini">
-          <div class="val" id="d_avg_me">—</div>
-          <div class="note">Среднее утро / вечер</div>
-          <div class="note" id="d_avg_me_note"></div>
-        </div>
-        <div class="mini">
-          <div class="val" id="d_period">—</div>
-          <div class="note">Период наблюдения</div>
-          <div class="note" id="d_counts">—</div>
-        </div>
-      </div>
-
-      <div class="kpi" style="margin-top:10px;">
-        <div class="mini">
-          <div class="val" id="d_minmax">—</div>
-          <div class="note">Минимум / максимум АД</div>
-        </div>
-        <div class="mini">
-          <div class="val" id="d_median">—</div>
-          <div class="note">Медианное АД</div>
-        </div>
-        <div class="mini">
-          <div class="val" id="d_range">—</div>
-          <div class="note">Разброс значений (макс − мин)</div>
-        </div>
-      </div>
-
-      <div class="kpi" style="margin-top:10px;">
-        <div class="mini">
-          <div class="val" id="d_percent_high">—</div>
-          <div class="note">Процент превышений ≥140/90</div>
-        </div>
-        <div class="mini">
-          <div class="val" id="d_soft_flags">—</div>
-          <div class="note">Ориентиры (низкое АД / пульс)</div>
-        </div>
-        <div class="mini">
-          <button class="btn secondary" id="toggleChart" type="button" style="width:100%;">Показать график</button>
-          <div class="note" style="margin-top:8px;">График строится по данным CSV. Без внешних библиотек.</div>
-        </div>
-      </div>
-
-      <div id="chartBlock" hidden style="margin-top:12px;">
-        <canvas id="bpChart" width="900" height="320" style="border:1px solid var(--line);border-radius:14px;"></canvas>
-
-        <div class="toolbar" style="margin-top:10px;">
-          <button class="btn secondary" id="chartAll" type="button">Все измерения</button>
-          <button class="btn secondary" id="chartMorning" type="button">Только утро</button>
-          <button class="btn secondary" id="chartEvening" type="button">Только вечер</button>
-        </div>
-
-        <div class="note" style="margin-top:8px;">
-          На графике отображаются САД и ДАД во времени. Горизонтальные линии — ориентиры 140/90.
-        </div>
-      </div>
-
-      <div class="note" id="doctorWarn" style="margin-top:12px; display:none; padding:10px 12px; border:1px solid var(--line); border-radius:14px; background:#fff;"></div>
-    </aside>
-
-  </div>
-
-  <div class="footer">
-    Разработано для использования в БУ «Югорская городская больница».<br>
-    Инструмент предназначен для поддержки клинического решения и не заменяет врачебную оценку.
-  </div>
-
+<div class="footer">
+Разработано для использования в БУ «Югорская городская больница».<br>
+Инструмент предназначен для поддержки клинического решения и не заменяет врачебную оценку.
+</div>
 </div>
 
 <script>
-// ---- Инициализация ----
-const diaryTable = document.querySelector('#bpDiaryTable tbody');
-const modeDoctorBtn = document.getElementById('modeDoctor');
-const modePatientBtn = document.getElementById('modePatient');
-const btnReset = document.getElementById('btnReset');
-const toggleDiaryBtn = document.getElementById('toggleDiary');
-const diaryBlock = document.getElementById('diary');
-const statsBlock = document.getElementById('stats');
-const canvasBP = document.getElementById('chartBP').getContext('2d');
-const canvasPulse = document.getElementById('chartPulse').getContext('2d');
+// === Пороговые значения ===
+const DAYS = 30;
+const LS_KEY = "gb_bp_diary_v6";
+const LOW_SYS=90, LOW_DIA=60, HIGH_SYS=140, HIGH_DIA=90, LOW_PULSE=50, HIGH_PULSE=100;
 
-let diaryData = [];
-let chartBP, chartPulse;
+// === Режимы ===
+const btnDoc=document.getElementById("modeDoctor");
+const btnPat=document.getElementById("modePatient");
+function setMode(mode){
+  document.body.classList.toggle("mode-doctor", mode==="doctor");
+  document.body.classList.toggle("mode-patient", mode==="patient");
+  btnDoc.classList.toggle("active", mode==="doctor");
+  btnPat.classList.toggle("active", mode==="patient");
+  localStorage.setItem("gb_mode", mode);
+}
+btnDoc.addEventListener("click", ()=>setMode("doctor"));
+btnPat.addEventListener("click", ()=>setMode("patient"));
+setMode(localStorage.getItem("gb_mode")==="patient"?"patient":"doctor");
 
-// ---- Смена режимов ----
-modeDoctorBtn.addEventListener('click', () => {
-  document.body.classList.add('mode-doctor');
-  document.body.classList.remove('mode-patient');
-  modeDoctorBtn.classList.add('active');
-  modePatientBtn.classList.remove('active');
-});
-modePatientBtn.addEventListener('click', () => {
-  document.body.classList.add('mode-patient');
-  document.body.classList.remove('mode-doctor');
-  modeDoctorBtn.classList.remove('active');
-  modePatientBtn.classList.add('active');
-});
-
-// ---- Сброс данных ----
-btnReset.addEventListener('click', () => {
-  if(confirm('Очистить все данные дневника на этом устройстве?')){
-    localStorage.removeItem('bpDiaryData');
-    diaryData = [];
-    initDiary();
-    renderDiary();
-    renderStats();
+// === Утилиты ===
+function safeInt(x){const n=Number(String(x||"").trim());return Number.isFinite(n)?n:null;}
+function normalizeBP(v){
+  const s=String(v||"").trim();
+  if(!s) return "";
+  if(s.includes("/")){
+    const [a,b]=s.split("/",2);
+    const sys=(a||"").replace(/\D/g,"").slice(0,3).replace(/^0+(?=\d)/,"");
+    const dia=(b||"").replace(/\D/g,"").slice(0,3).replace(/^0+(?=\d)/,"");
+    if(!sys&&!dia) return "";
+    if(!dia) return sys+"/";
+    return sys+"/"+dia;
   }
-});
-
-// ---- Показ/скрытие дневника ----
-toggleDiaryBtn.addEventListener('click', () => {
-  diaryBlock.hidden = !diaryBlock.hidden;
-});
-
-// ---- Нормализация и парсинг АД ----
-function normalizeBP(str){
-  str = str.replace(/\D/g,''); // только цифры
-  if(str.length === 4){ // 8040 → 80/40
-    return str.slice(0,2) + '/' + str.slice(2);
-  } else if(str.length === 5){ // 12080 → 120/80
-    return str.slice(0,3) + '/' + str.slice(3);
-  }
-  return str;
+  const d=s.replace(/\D/g,"");
+  if(d.length<=3) return d;
+  if(d.length===4){return Number(d.slice(0,3))>=100?d.slice(0,3)+"/"+d.slice(3,4):d.slice(0,2)+"/"+d.slice(2,4);}
+  if(d.length===5){return Number(d.slice(0,3))>=100?d.slice(0,3)+"/"+d.slice(3,5):d.slice(0,2)+"/"+d.slice(2,5);}
+  return d.slice(0,3)+"/"+d.slice(3,6);
 }
+function parseBP(bp){const m=String(bp||"").trim().match(/^(\d{1,3})\/(\d{1,3})$/);if(!m)return null;return {sys:Number(m[1]),dia:Number(m[2])};}
+function bpState(bp){const v=parseBP(bp);if(!v)return null;if(v.sys<LOW_SYS||v.dia<LOW_DIA)return "low";if(v.sys>=HIGH_SYS||v.dia>=HIGH_DIA)return "high";return "ok";}
+function pulseState(v){const p=safeInt(v);if(p===null)return null;if(p<LOW_PULSE)return "low";if(p>HIGH_PULSE)return "high";return "ok";}
+function avg(arr){return arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0;}
 
-function parseBP(str){
-  if(!str) return [null,null];
-  const parts = str.split('/');
-  if(parts.length === 2){
-    return [parseInt(parts[0]), parseInt(parts[1])];
-  }
-  return [null,null];
-}
-
-// ---- Определение состояния АД ----
-function bpState(sad, dad){
-  if(sad === null || dad === null) return '';
-  if(sad < 90 || dad < 60) return 'field-low';
-  if(sad >= 140 || dad >= 90) return 'field-hi';
-  return 'field-ok';
-}
-
-// ---- Создание пустого дневника на 30 дней ----
-function initDiary(){
-  diaryData = [];
-  const today = new Date();
-  for(let i=0;i<30;i++){
-    const d = new Date(today.getTime() - (29-i)*24*3600*1000);
-    diaryData.push({
-      day: i+1,
-      date: d.toISOString().slice(0,10),
-      morningBP: '',
-      morningPulse: '',
-      eveningBP: '',
-      eveningPulse: '',
-      note: ''
-    });
-  }
-}
-
-// ---- Сохранение в localStorage ----
-function saveDiary(){
-  localStorage.setItem('bpDiaryData', JSON.stringify(diaryData));
-}
-
-// ---- Рендер таблицы ----
-function renderDiary(){
-  diaryTable.innerHTML = '';
-  diaryData.forEach((row,i)=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${row.day}</td>
-      <td>${row.date}</td>
-      <td class="${bpState(...parseBP(row.morningBP))}"><input value="${row.morningBP}" data-type="morningBP" data-index="${i}"></td>
-      <td class="${row.morningPulse < 50 || row.morningPulse > 100 ? 'field-low' : ''}"><input value="${row.morningPulse}" data-type="morningPulse" data-index="${i}"></td>
-      <td class="${bpState(...parseBP(row.eveningBP))}"><input value="${row.eveningBP}" data-type="eveningBP" data-index="${i}"></td>
-      <td class="${row.eveningPulse < 50 || row.eveningPulse > 100 ? 'field-low' : ''}"><input value="${row.eveningPulse}" data-type="eveningPulse" data-index="${i}"></td>
-      <td><input value="${row.note}" data-type="note" data-index="${i}"></td>
-    `;
-    diaryTable.appendChild(tr);
-  });
-
-  // ---- События input ----
-  diaryTable.querySelectorAll('input').forEach(input=>{
-    input.addEventListener('input', e=>{
-      const idx = e.target.dataset.index;
-      const type = e.target.dataset.type;
-      if(type.includes('BP')){
-        diaryData[idx][type] = normalizeBP(e.target.value);
-      } else if(type.includes('Pulse')){
-        diaryData[idx][type] = e.target.value.replace(/\D/g,'');
-      } else {
-        diaryData[idx][type] = e.target.value;
-      }
-      saveDiary();
-      renderDiary();
-      renderStats();
-    });
-  });
-}
-
-// ---- Статистика ----
-function renderStats(){
-  const sadValues = [];
-  const dadValues = [];
-  const pulseValues = [];
-
-  diaryData.forEach(row=>{
-    const [mSAD,mDAD] = parseBP(row.morningBP);
-    const [eSAD,eDAD] = parseBP(row.eveningBP);
-    if(mSAD && mDAD){ sadValues.push(mSAD); dadValues.push(mDAD); }
-    if(eSAD && eDAD){ sadValues.push(eSAD); dadValues.push(eDAD); }
-    if(row.morningPulse) pulseValues.push(parseInt(row.morningPulse));
-    if(row.eveningPulse) pulseValues.push(parseInt(row.eveningPulse));
-  });
-
-  function stats(arr){
-    if(!arr.length) return {avg:0,min:0,max:0};
-    const sum = arr.reduce((a,b)=>a+b,0);
-    return {avg:(sum/arr.length).toFixed(1), min:Math.min(...arr), max:Math.max(...arr)};
-  }
-
-  const sadStats = stats(sadValues);
-  const dadStats = stats(dadValues);
-  const pulseStats = stats(pulseValues);
-
-  statsBlock.innerHTML = `
-    <p><strong>САД:</strong> среднее ${sadStats.avg}, мин ${sadStats.min}, макс ${sadStats.max}</p>
-    <p><strong>ДАД:</strong> среднее ${dadStats.avg}, мин ${dadStats.min}, макс ${dadStats.max}</p>
-    <p><strong>Пульс:</strong> среднее ${pulseStats.avg}, мин ${pulseStats.min}, макс ${pulseStats.max}</p>
-  `;
-
-  renderCharts(sadValues, dadValues, pulseValues);
-}
-
-// ---- Графики ----
-function renderCharts(sadValues,dadValues,pulseValues){
-  const labels = diaryData.map(r=>r.day);
-
-  if(chartBP) chartBP.destroy();
-  chartBP = new Chart(canvasBP,{
-    type:'line',
-    data:{
-      labels,
-      datasets:[
-        {label:'САД', data: diaryData.map(r=>parseBP(r.morningBP)[0] || null), borderColor:'red', tension:0.3},
-        {label:'ДАД', data: diaryData.map(r=>parseBP(r.morningBP)[1] || null), borderColor:'blue', tension:0.3}
-      ]
-    },
-    options:{responsive:true, plugins:{legend:{position:'top'}}}
-  });
-
-  if(chartPulse) chartPulse.destroy();
-  chartPulse = new Chart(canvasPulse,{
-    type:'line',
-    data:{
-      labels,
-      datasets:[
-        {label:'Пульс утро', data: diaryData.map(r=>r.morningPulse || null), borderColor:'green', tension:0.3},
-        {label:'Пульс вечер', data: diaryData.map(r=>r.eveningPulse || null), borderColor:'orange', tension:0.3}
-      ]
-    },
-    options:{responsive:true, plugins:{legend:{position:'top'}}}
-  });
-}
-
-// ---- Инициализация ----
-const stored = localStorage.getItem('bpDiaryData');
-if(stored){
-  diaryData = JSON.parse(stored);
-} else {
-  initDiary();
-}
-renderDiary();
-renderStats();
-</script>
+// === Инициализация таблицы ===
+const tbody=document.querySelector("#bpDiaryTable tbody");
+let diary=JSON.parse(localStorage.getItem(LS_KEY)||"{}");
+for(let d=1;d<=DAYS;d++){
+  const tr=document.createElement("tr");
+  const dateInput=document.createElement("input");dateInput.type="date";dateInput.value=diary[d]?.date||"";
+  const sysAMInput=document.createElement("input");sysAMInput.value=diary[d]?.sysAM||"";
+  const pulseAMInput=document.createElement("input");pulseAMInput.value=diary[d]?.pulseAM||"";
+  const sysPMInput=document.createElement("input");sysPMInput.value=diary[d]?.sysPM||"";
+  const pulsePMInput=document.createElement("input");pulsePMInput.value=diary[d]?.pulsePM||"";
+  const noteInput=document.createElement("input");noteInput.value=diary[d]?.note||"";
   
+  function updateDiary(){
+    diary[d]={date:dateInput.value,sysAM:normalizeBP(sysAMInput.value),pulseAM:pulseAMInput.value,sysPM:normalizeBP(sysPMInput.value),pulsePM:pulsePMInput.value,note:noteInput.value};
+    localStorage.setItem(LS_KEY,JSON.stringify(diary));
+    renderRowStyles(tr,d);
+  }
+  [dateInput,sysAMInput,pulseAMInput,sysPMInput,pulsePMInput,noteInput].forEach(inp=>inp.addEventListener("input",updateDiary));
+  
+  tr.innerHTML=`<td class="col-day">${d}</td><td class="col-date"></td><td class="col-bp"></td><td class="col-hr"></td><td class="col-bp"></td><td class="col-hr"></td><td class="col-note"></td>`;
+  tr.cells[1].appendChild(dateInput);
+  tr.cells[2].appendChild(sysAMInput);
+  tr.cells[3].appendChild(pulseAMInput);
+  tr.cells[4].appendChild(sysPMInput);
+  tr.cells[5].appendChild(pulsePMInput);
+  tr.cells[6].appendChild(noteInput);
+  tbody.appendChild(tr);
+  renderRowStyles(tr,d);
+}
+
+// === Подсветка ячеек ===
+function renderRowStyles(tr,d){
+  const r=diary[d]||{};
+  tr.cells[2].className="col-bp";tr.cells[4].className="col-bp";
+  tr.cells[3].className="col-hr";tr.cells[5].className="col-hr";
+  const stAM=bpState(r.sysAM);const stPM=bpState(r.sysPM);
+  const pstAM=pulseState(r.pulseAM);const pstPM=pulseState(r.pulsePM);
+  if(stAM==="low") tr.cells[2].classList.add("field-low"); else if(stAM==="high") tr.cells[2].classList.add("field-hi"); else tr.cells[2].classList.add("field-ok");
+  if(stPM==="low") tr.cells[4].classList.add("field-low"); else if(stPM==="high") tr.cells[4].classList.add("field-hi"); else tr.cells[4].classList.add("field-ok");
+  if(pstAM==="low"||pstAM==="high") tr.cells[3].classList.add("field-"+pstAM);
+  if(pstPM==="low"||pstPM==="high") tr.cells[5].classList.add("field-"+pstPM);
+}
+
+// === Кнопки ===
+document.getElementById("btnReset").addEventListener("click",()=>{if(confirm("Сбросить все данные?")){diary={};localStorage.removeItem(LS_KEY);location.reload();}});
+document.getElementById("toggleDiary").addEventListener("click",()=>{const el=document.getElementById("diary");el.hidden=!el.hidden;});
+</script>
 </body>
 </html>
