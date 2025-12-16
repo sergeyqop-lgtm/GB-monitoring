@@ -1,152 +1,199 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8" />
-<title>Информационная система поддержки диспансерного наблюдения пациентов с артериальной гипертензией</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<style>
-/* --- базовые стили, пастельная зелёная гамма --- */
-body{font-family:Arial,Helvetica,sans-serif;background:#f4faf7;margin:0;padding:20px;color:#1f2d2a}
-h1{margin-bottom:6px}
-h2{margin-top:30px}
-button{border:0;border-radius:20px;padding:10px 16px;margin:4px;cursor:pointer}
-.btn-main{background:#2f8f6f;color:#fff}
-.btn-alt{background:#e3f3ed}
-.table-wrap{overflow-x:auto}
-table{border-collapse:separate;border-spacing:0;width:100%;min-width:900px;background:#fff;border-radius:12px;overflow:hidden}
-th,td{padding:8px;border-bottom:1px solid #dfeee8;text-align:center}
-th{background:#e6f4ee;font-weight:600}
-input{width:90px;padding:6px 8px;border-radius:10px;border:1px solid #cdded6;text-align:center}
-input.comment{width:200px}
-.field-low{background:#e6f0ff;border-color:#8bb1ff}
-.field-high{background:#ffe7d9;border-color:#ffb089}
-.notice{font-size:13px;color:#4b6b61;margin-top:6px}
-.hidden{display:none}
-footer{margin-top:30px;font-size:13px;color:#4b6b61}
-canvas{background:#fff;border-radius:12px;border:1px solid #dfeee8;margin-top:20px}
-</style>
+  <meta charset="UTF-8" />
+  <title>Информационная система поддержки диспансерного наблюдения (ГБ)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+      color: #1f2937;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 0;
+    }
+    .mode-switch {
+      display: flex;
+      gap: 8px;
+    }
+    button {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: white;
+      cursor: pointer;
+    }
+    button.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .form-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      align-items: center;
+    }
+    input {
+      padding: 6px;
+      width: 90px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid #e5e7eb;
+      padding: 6px;
+      text-align: center;
+    }
+    th {
+      background: #f1f5f9;
+    }
+    .ok {
+      background: #dcfce7;
+    }
+    .warn {
+      background: #fee2e2;
+    }
+    .actions {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+    footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #64748b;
+    }
+  </style>
 </head>
 <body>
-<h1>Информационная система поддержки диспансерного наблюдения</h1>
-<div class="notice">Пациенты самостоятельно ведут дневник АД. Данные сохраняются локально в браузере и могут быть переданы врачу в виде файла.</div>
+  <header>
+    <h1>ИС поддержки диспансерного наблюдения пациентов с ГБ</h1>
+    <div class="mode-switch">
+      <button id="patientBtn" class="active">Пациент</button>
+      <button id="doctorBtn">Врач</button>
+    </div>
+  </header>
 
-<button class="btn-main" onclick="toggleDiary()">Показать / скрыть дневник</button>
-<button class="btn-alt" onclick="downloadCSV()">Скачать заполненный дневник (CSV)</button>
-<button class="btn-alt" onclick="toggleChart()">Показать график</button>
+  <div class="container">
+    <div class="form-row">
+      <label>САД:</label>
+      <input id="sbp" type="number" placeholder="120" />
+      <label>ДАД:</label>
+      <input id="dbp" type="number" placeholder="80" />
+      <label>Пульс:</label>
+      <input id="pulse" type="number" placeholder="70" />
+      <button onclick="addEntry()">Добавить</button>
+    </div>
 
-<div id="diary" class="table-wrap">
-<table id="bpTable">
-<thead>
-<tr>
-<th>День</th><th>Дата</th><th>Утро АД</th><th>Пульс</th><th>Вечер АД</th><th>Пульс</th><th class="comment-col">Комментарий</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
-</div>
+    <table id="bpTable">
+      <thead>
+        <tr>
+          <th>Дата</th>
+          <th>САД</th>
+          <th>ДАД</th>
+          <th>Пульс</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
 
-<h2>Статистика наблюдения</h2>
-<div id="stats"></div>
+    <div class="actions">
+      <button onclick="downloadExcel()">Скачать Excel</button>
+      <button onclick="downloadPDF()">Скачать PDF</button>
+    </div>
 
-<canvas id="chart" width="800" height="300" class="hidden"></canvas>
-
-<footer>
-БУ «Югорская городская больница»<br />
-Инструмент не ставит диагнозов и не заменяет консультацию врача.
-</footer>
+    <footer>
+      <div id="stats"></div>
+      <p>Инструмент предназначен для поддержки диспансерного наблюдения. Не заменяет консультацию врача.</p>
+    </footer>
+  </div>
 
 <script>
-/* ================= ЕДИНАЯ ЛОГИКА ================= */
+let mode = 'patient';
+let data = [];
 
-function normalizeBP(value){
- if(!value) return "";
- let v=value.replace(/[^\d/]/g,"");
- if(v.includes("/")){
-  let [s,d]=v.split("/");
-  s=parseInt(s||"",10); d=parseInt(d||"",10);
-  if(!s||!d) return value;
-  return `${s}/${d}`;
- }
- if(!/^\d+$/.test(v)) return value;
- if(v.length===3){let s=parseInt(v.slice(0,2));let d=parseInt(v.slice(2))*10;return d?`${s}/${d}`:value}
- if(v.length===4){return `${parseInt(v.slice(0,2))}/${parseInt(v.slice(2))}`}
- if(v.length===5){return `${parseInt(v.slice(0,3))}/${parseInt(v.slice(3))}`}
- return value;
+function normalizeBP(val) {
+  return parseInt(val, 10);
 }
 
-function applyBPValidation(input){
- input.classList.remove("field-low","field-high");
- if(!input.value.includes("/")) return;
- let [s,d]=input.value.split("/").map(Number);
- if(s<90||d<60) input.classList.add("field-low");
- if(s>=140||d>=90) input.classList.add("field-high");
+function switchMode(newMode) {
+  mode = newMode;
+  document.getElementById('patientBtn').classList.toggle('active', mode==='patient');
+  document.getElementById('doctorBtn').classList.toggle('active', mode==='doctor');
 }
 
-function applyPulseValidation(input){
- input.classList.remove("field-low","field-high");
- let p=parseInt(input.value,10);
- if(!p) return;
- if(p<50) input.classList.add("field-low");
- if(p>100) input.classList.add("field-high");
+document.getElementById('patientBtn').onclick = () => switchMode('patient');
+document.getElementById('doctorBtn').onclick = () => switchMode('doctor');
+
+function addEntry() {
+  const sbp = normalizeBP(document.getElementById('sbp').value);
+  const dbp = normalizeBP(document.getElementById('dbp').value);
+  const pulse = normalizeBP(document.getElementById('pulse').value);
+  if (!sbp || !dbp) return;
+  const entry = { date: new Date().toLocaleDateString(), sbp, dbp, pulse };
+  data.push(entry);
+  render();
 }
 
-/* ================= ТАБЛИЦА ================= */
-const tbody=document.querySelector("#bpTable tbody");
-for(let i=1;i<=30;i++){
- let tr=document.createElement("tr");
- tr.innerHTML=`<td>${i}</td>
- <td><input type="date"></td>
- <td><input class="bp"></td>
- <td><input class="pulse"></td>
- <td><input class="bp"></td>
- <td><input class="pulse"></td>
- <td class="comment-col"><input class="comment"></td>`;
- tbody.appendChild(tr);
+function render() {
+  const tbody = document.querySelector('#bpTable tbody');
+  tbody.innerHTML = '';
+  data.forEach(e => {
+    const tr = document.createElement('tr');
+    if (e.sbp < 140 && e.dbp < 90) tr.className = 'ok';
+    else tr.className = 'warn';
+    tr.innerHTML = `<td>${e.date}</td><td>${e.sbp}</td><td>${e.dbp}</td><td class="${pulseClass(e.pulse)}">${e.pulse}</td>`;
+    tbody.appendChild(tr);
+  });
+  calcStats();
 }
 
-function recalcStats(){
- let sys=[],dia=[];
- document.querySelectorAll(".bp").forEach(i=>{
-  if(i.value.includes("/")){
-   let [s,d]=i.value.split("/").map(Number);
-   sys.push(s); dia.push(d);
-  }
- });
- if(!sys.length){stats.innerHTML="Нет данных";return;}
- let avg=a=>Math.round(a.reduce((x,y)=>x+y,0)/a.length);
- let median=a=>{let b=[...a].sort((x,y)=>x-y);let m=Math.floor(b.length/2);return b.length%2?b[m]:Math.round((b[m-1]+b[m])/2)};
- let highPct=Math.round(sys.filter(v=>v>=140).length/sys.length*100);
- stats.innerHTML=`Среднее АД: ${avg(sys)}/${avg(dia)} мм рт.ст.<br>
- Медиана: ${median(sys)}/${median(dia)} мм рт.ст.<br>
- Минимум: ${Math.min(...sys)}/${Math.min(...dia)}<br>
- Максимум: ${Math.max(...sys)}/${Math.max(...dia)}<br>
- Доля измерений выше ориентиров: ${highPct}%`;
- drawChart(sys);
+function pulseClass(p) {
+  if (!p) return '';
+  if (p >= 60 && p <= 80) return 'ok';
+  return 'warn';
 }
 
-function drawChart(data){
- if(chart.classList.contains("hidden")) return;
- let ctx=chart.getContext("2d");ctx.clearRect(0,0,800,300);
- ctx.beginPath();ctx.moveTo(20,280);
- data.forEach((v,i)=>ctx.lineTo(20+i*(760/(data.length-1)),280-(v-80)));
- ctx.strokeStyle="#2f8f6f";ctx.stroke();
+function median(arr) {
+  const s = [...arr].sort((a,b)=>a-b);
+  const m = Math.floor(s.length/2);
+  return s.length%2 ? s[m] : (s[m-1]+s[m])/2;
 }
 
-/* ================= ОБРАБОТЧИКИ ================= */
-document.addEventListener("input",e=>{
- if(e.target.classList.contains("bp")){
-  e.target.value=normalizeBP(e.target.value);
-  applyBPValidation(e.target);
-  recalcStats();
- }
- if(e.target.classList.contains("pulse")){
-  applyPulseValidation(e.target);
- }
-});
+function calcStats() {
+  if (!data.length) return;
+  const sbpArr = data.map(d=>d.sbp);
+  const dbpArr = data.map(d=>d.dbp);
+  const target = data.filter(d=>d.sbp<140 && d.dbp<90).length;
+  document.getElementById('stats').innerText = 
+    `Медиана САД: ${median(sbpArr)} | Медиана ДАД: ${median(dbpArr)} | В целевых значениях: ${Math.round(target/data.length*100)}%`;
+}
 
-function toggleDiary(){diary.classList.toggle("hidden")}
-function toggleChart(){chart.classList.toggle("hidden");recalcStats()}
-function downloadCSV(){alert("Экспорт CSV реализуется без сервера")}
+function downloadExcel(){ alert('Экспорт в Excel подключается (xlsx)'); }
+function downloadPDF(){ alert('Экспорт в PDF подключается (jsPDF)'); }
 </script>
 </body>
 </html>
