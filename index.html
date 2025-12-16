@@ -3,729 +3,409 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Регламент диспансерного наблюдения — Гипертоническая болезнь (ГБ)</title>
-  <meta name="description" content="Регламент диспансерного наблюдения по нозологии «Гипертоническая болезнь»: цели, визиты, обследования, критерии эффективности, эскалация, консультации, госпитализация, документация." />
+  <title>GB-monitoring — мониторинг гипертонической болезни</title>
   <style>
     :root{
-      --bg:#0b1220;
-      --card:#111a2e;
-      --text:#e6eaf2;
-      --muted:#aab3c5;
-      --line:#233152;
-      --accent:#6ee7ff;
-      --accent2:#a78bfa;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius:18px;
+      --bg:#0b1220; --card:#101a2e; --text:#e7eefc; --muted:#aab8d6;
+      --line:#223052; --btn:#1a2b52; --btn2:#1f3b7a; --ok:#1f8f5f;
+      --warn:#b86b1a; --danger:#b33a3a;
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(1200px 600px at 15% 0%, rgba(110,231,255,.14), transparent 55%),
-                  radial-gradient(1200px 700px at 95% 10%, rgba(167,139,250,.14), transparent 55%),
-                  var(--bg);
-      color:var(--text);
-    }
-    a{color:inherit; text-decoration:none}
-    .wrap{max-width:1120px; margin:0 auto; padding:22px 18px 60px}
-
-    header{
-      display:flex; gap:14px; align-items:center; justify-content:space-between;
-      padding:16px 16px;
-      background: linear-gradient(180deg, rgba(17,26,46,.85), rgba(17,26,46,.55));
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      position: sticky; top: 12px; z-index: 20;
-      backdrop-filter: blur(10px);
-    }
-    .brand{display:flex; align-items:center; gap:12px; min-width: 240px}
-    .logo{width:40px;height:40px;border-radius:12px; background: linear-gradient(135deg, rgba(110,231,255,.85), rgba(167,139,250,.85));}
-    .brand h1{font-size:14px; margin:0; line-height:1.2}
-    .brand .sub{font-size:12px; color:var(--muted)}
-
-    .tools{display:flex; gap:10px; align-items:center; flex:1; justify-content:flex-end}
-    .search{
-      display:flex; align-items:center; gap:10px;
-      background: rgba(15,23,42,.7);
-      border:1px solid var(--line);
-      padding:10px 12px;
-      border-radius: 14px;
-      min-width: 320px;
-      max-width: 520px;
-      width: 100%;
-    }
-    .search input{width:100%; border:0; outline:0; background: transparent; color: var(--text); font-size: 13px;}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(120deg,#070b14,#0b1220 55%,#070b14);color:var(--text)}
+    a{color:#9fc2ff}
+    .wrap{max-width:1100px;margin:0 auto;padding:20px}
+    header{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+    .brand{display:flex;flex-direction:column;gap:6px}
+    .brand h1{margin:0;font-size:20px;letter-spacing:.2px}
+    .brand p{margin:0;color:var(--muted);font-size:13px;max-width:820px;line-height:1.35}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     .btn{
-      border:1px solid var(--line);
-      background: rgba(15,23,42,.7);
-      color: var(--text);
-      padding:10px 12px;
-      border-radius: 14px;
-      cursor:pointer;
-      transition: transform .06s ease, background .2s ease, border .2s ease;
-      font-size: 13px;
-      white-space: nowrap;
+      border:1px solid var(--line); background:var(--btn); color:var(--text);
+      padding:10px 12px; border-radius:12px; cursor:pointer; font-weight:600;
+      transition:transform .06s ease, background .12s ease, border-color .12s ease;
+      user-select:none
     }
-    .btn:hover{background: rgba(17,26,46,.9)}
-    .btn:active{transform: translateY(1px)}
-
+    .btn:hover{background:var(--btn2)}
+    .btn:active{transform:translateY(1px)}
+    .btn.active{border-color:#4a73ff;background:#17306a}
+    .btn.secondary{background:transparent}
+    .badge{padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-top:14px}
+    @media (max-width: 980px){.grid{grid-template-columns:1fr}}
     .card{
-      background: linear-gradient(180deg, rgba(17,26,46,.8), rgba(15,23,42,.75));
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 16px;
+      background:rgba(16,26,46,.72); border:1px solid var(--line); border-radius:18px;
+      padding:14px 14px 12px; box-shadow:0 10px 28px rgba(0,0,0,.25)
     }
-
-    .hero{margin-top:16px; display:grid; grid-template-columns: 1.2fr .8fr; gap:14px;}
-    .muted{color: var(--muted)}
-    .pillrow{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
-    .pill{font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid var(--line); background: rgba(11,18,32,.35);}
-
-    nav{margin-top:12px; display:flex; flex-wrap:wrap; gap:8px;}
-    .navlink{border:1px solid var(--line); background: rgba(15,23,42,.7); padding:8px 10px; border-radius: 999px; font-size: 12px;}
-    .navlink:hover{border-color: rgba(110,231,255,.35)}
-
-    section{scroll-margin-top: 96px}
-    .grid{margin-top:14px; display:grid; grid-template-columns: 1fr 1fr; gap:14px;}
-    .section-title{display:flex; align-items:flex-end; justify-content:space-between; gap:10px}
-    .section-title h3{margin:0; font-size:16px}
-    .kicker{font-size:12px; color: var(--muted)}
-
-    ul{margin:10px 0 0; padding-left: 18px}
-    li{margin:6px 0; line-height:1.35}
-
-    table{width:100%; border-collapse:separate; border-spacing:0; margin-top:10px; overflow:hidden; border-radius: 16px;}
-    thead th{ text-align:left; font-size:12px; color: var(--muted); background: rgba(11,18,32,.45); border-bottom: 1px solid var(--line); padding:10px 12px; }
-    tbody td{ padding:10px 12px; border-bottom:1px solid rgba(35,49,82,.65); font-size:13px; vertical-align:top; }
-    tbody tr:hover td{background: rgba(11,18,32,.22)}
-    tbody tr:last-child td{border-bottom:0}
-
-    .tag{font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid var(--line); background: rgba(11,18,32,.35); display:inline-block}
-
-    .cols{display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-top:10px}
-    .checklist{margin:0; padding:0; list-style:none}
-    .checklist li{display:flex; gap:10px; align-items:flex-start; border:1px solid rgba(35,49,82,.65); background: rgba(11,18,32,.25); border-radius: 14px; padding:10px 12px; margin:8px 0;}
-    .checklist input{margin-top:3px}
-    .small{font-size:12px; color:var(--muted)}
-
-    details{border:1px solid rgba(35,49,82,.65); background: rgba(11,18,32,.22); border-radius: 16px; padding:10px 12px; margin-top:10px;}
-    summary{cursor:pointer; font-size:13px; font-weight: 600}
-    details p{margin:8px 0 0; color: var(--muted); font-size:13px; line-height:1.45}
-
-    footer{margin-top:16px; color: var(--muted); font-size: 12px; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; padding: 0 2px;}
-
-    @media print{
-      header, nav, .noprint{display:none !important}
-      body{background:#fff; color:#000}
-      .card{box-shadow:none; border:1px solid #ccc; background:#fff}
-      .muted, .small{color:#333}
-      a{color:#000}
-      table thead th{background:#f3f3f3}
+    .card h2{margin:0 0 8px;font-size:15px}
+    .card p{margin:0 0 10px;color:var(--muted);font-size:13px;line-height:1.4}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .hr{height:1px;background:var(--line);margin:12px 0}
+    .note{font-size:12px;color:var(--muted)}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px; border:1px solid var(--line); border-radius:999px; color:var(--muted); font-size:12px
     }
-
-    @media (max-width: 980px){
-      .hero{grid-template-columns: 1fr}
-      .grid{grid-template-columns: 1fr}
-      .cols{grid-template-columns: 1fr}
-      .search{min-width: 0}
-      header{flex-wrap:wrap; justify-content:center}
-      .brand{min-width: 0; width: 100%; justify-content:center}
-      .tools{width:100%; justify-content:space-between}
+    .pill b{color:var(--text)}
+    .warn{color:#ffd7a8}
+    .ok{color:#b7ffd8}
+    /* diary */
+    table{width:100%;border-collapse:collapse}
+    th,td{border:1px solid var(--line);padding:8px;vertical-align:top}
+    th{font-size:12px;color:#cfe0ff;background:rgba(20,32,58,.7);text-align:left}
+    td{font-size:12px}
+    input,select,textarea{
+      width:100%; padding:8px 10px; border-radius:12px; border:1px solid var(--line);
+      background:rgba(7,11,20,.6); color:var(--text); outline:none
     }
+    input::placeholder,textarea::placeholder{color:#7183aa}
+    textarea{min-height:38px;resize:vertical}
+    .table-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+    @media (max-width: 700px){.kpi{grid-template-columns:1fr}}
+    .kpi .card{padding:12px}
+    .kpi .val{font-size:18px;font-weight:800;margin-top:4px}
+    .small{font-size:12px;color:var(--muted)}
+    .footer{margin-top:16px;color:var(--muted);font-size:12px}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
   </style>
 </head>
+
 <body>
   <div class="wrap">
+
     <header>
       <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <h1>Регламент ДН — Гипертоническая болезнь</h1>
-          <div class="sub">Цели • Обязанности • Визиты • Обследования • Эскалация • Документация</div>
+        <h1>GB-monitoring</h1>
+        <p>
+          Продукт проекта: простой веб-инструмент для мониторинга гипертонической болезни.
+          Режим <b>Пациент</b> — дневник самоконтроля и памятка. Режим <b>Врач</b> — контроль соблюдения, оценка данных и быстрые подсказки по дальнейшим шагам.
+        </p>
+        <div class="row">
+          <span class="pill">Текущий режим: <b id="modeLabel">—</b></span>
+          <span class="badge">Локально, без серверов (данные хранятся в браузере)</span>
         </div>
       </div>
-      <div class="tools">
-        <div class="search" role="search">
-          <span aria-hidden="true">⌕</span>
-          <input id="q" type="search" placeholder="Поиск: “креатинин”, “ЭхоКГ”, “криз”, “кардиолог”…" />
-        </div>
-        <button class="btn" id="btnPrint" title="Печать/сохранение в PDF">Печать</button>
-        <button class="btn" id="btnReset" title="Сброс">Сброс</button>
+
+      <div class="toolbar">
+        <button class="btn active" id="modeDoctor" type="button" aria-pressed="true">Режим: Врач</button>
+        <button class="btn" id="modePatient" type="button" aria-pressed="false">Режим: Пациент</button>
+        <button class="btn secondary" id="btnReset" type="button" title="Сбросить локальные данные дневника">Сброс данных</button>
       </div>
     </header>
 
-    <div class="hero" id="top">
-      <div class="card">
-        <h2 style="margin:0 0 8px; font-size:18px">Общие положения</h2>
-        <div class="muted" style="line-height:1.55">
-          Артериальная гипертензия (гипертоническая болезнь, <b>ГБ</b>) относится к приоритетным хроническим неинфекционным заболеваниям,
-          подлежащим обязательному диспансерному наблюдению на уровне первичного звена.
-          Диспансерное наблюдение осуществляет <b>врач-терапевт участковый</b> в соответствии с действующими клиническими рекомендациями Минздрава РФ
-          и направлено на снижение сердечно-сосудистого риска, профилактику осложнений и поддержание целевых уровней артериального давления.
-        </div>
-        <div class="pillrow">
-          <span class="pill">Формат: ПМСП / амбулаторный этап</span>
-          <span class="pill">Без персональных данных</span>
-          <span class="pill">Версия: <b>v1.0</b> • Дата: <b><span id="today"></span></b></span>
-        </div>
-        <div class="noprint" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:8px">
-          <button class="btn" id="modeDoctor">Режим: Врач</button>
-          <button class="btn" id="modePatient">Режим: Пациент</button>
-        </div>
-        <div class="noprint" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:8px">
-          <a class="btn" href="#qr">QR-страница пациента</a>
-        </div>
-        <nav class="noprint" aria-label="Навигация">
-          <a class="navlink" href="#goals">Цели</a>
-          <a class="navlink" href="#duties">Обязанности врача</a>
-          <a class="navlink" href="#visits">Кратность визитов</a>
-          <a class="navlink" href="#diagnostics">Диагностический минимум</a>
-          <a class="navlink" href="#effectiveness">Эффективность</a>
-          <a class="navlink" href="#decomp">Декомпенсация</a>
-          <a class="navlink" href="#consults">Консультации</a>
-          <a class="navlink" href="#hospital">Госпитализация</a>
-          <a class="navlink" href="#docs">Документация</a>
-        </nav>
-      </div>
-
-      <div class="card">
-        <h2 style="margin:0 0 8px; font-size:18px">Дисклеймер</h2>
-        <div class="muted" style="line-height:1.55">
-          Материал предназначен для медицинских работников и служит организационным инструментом диспансерного наблюдения.
-          Фармакотерапия и клинические решения — согласно действующим клиническим рекомендациям.
-        </div>
-        <details>
-          <summary>Как использовать на приёме (30 секунд)</summary>
-          <p>
-            1) открой раздел «Кратность визитов» и зафиксируй следующий контроль; 2) пройди чек-лист первичного/годового контроля;
-            3) при «красных флагах» смотри раздел «Декомпенсация» и «Госпитализация».
-          </p>
-        </details>
-        <div class="noprint" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap">
-          <button class="btn" id="btnCheckAll">Отметить всё</button>
-          <button class="btn" id="btnUncheckAll">Снять отметки</button>
-        </div>
-      </div>
-    </div>
-
     <div class="grid">
-      <section class="card" id="goals">
-        <div class="section-title">
-          <h3>2. Цели диспансерного наблюдения</h3>
-          <div class="kicker">Что считаем «правильным результатом»</div>
-        </div>
-        <ul>
-          <li>достижение и поддержание целевых уровней АД;</li>
-          <li>снижение риска сердечно-сосудистых осложнений (инсульт, ИМ, ХСН);</li>
-          <li>раннее выявление поражения органов-мишеней;</li>
-          <li>контроль эффективности и безопасности антигипертензивной терапии;</li>
-          <li>повышение приверженности пациента лечению и немедикаментозным рекомендациям.</li>
-        </ul>
-      </section>
+      <!-- LEFT -->
+      <section class="card">
+        <h2>Дневник артериального давления (30 дней)</h2>
+        <p>
+          Заполняйте утром и вечером. Кнопки ниже позволяют скачать заполненный дневник (CSV) или открыть печатные шаблоны (PDF/XLSX).
+        </p>
 
-      <section class="card" id="duties">
-        <div class="section-title">
-          <h3>3. Обязанности врача-терапевта участкового</h3>
-          <div class="kicker">Организационный минимум действий</div>
-        </div>
-        <ul>
-          <li>подтвердить диагноз и стадию ГБ;</li>
-          <li>определить уровень сердечно-сосудистого риска;</li>
-          <li>назначать и корректировать антигипертензивную терапию в соответствии с клиническими рекомендациями;</li>
-          <li>контролировать достижение целевых значений АД;</li>
-          <li>организовать выполнение обязательного диагностического минимума;</li>
-          <li>своевременно выявлять признаки поражения органов-мишеней;</li>
-          <li>определять показания для консультаций узких специалистов;</li>
-          <li>вести медицинскую документацию и реестр диспансерных пациентов.</li>
-        </ul>
-      </section>
+        <div class="row">
+          <button class="btn" id="toggleDiary" type="button">Показать дневник</button>
 
-      <section class="card" id="visits">
-        <div class="section-title">
-          <h3>4. Кратность визитов и динамическое наблюдение</h3>
-          <div class="kicker">Сроки контроля и «точки управления»</div>
-        </div>
-        <table aria-label="Кратность визитов">
-          <thead>
-            <tr>
-              <th>Категория пациента</th>
-              <th>Кратность визитов</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><span class="tag">Стабильное течение</span> (целевое АД достигнуто)</td>
-              <td>1 раз в 6 месяцев</td>
-            </tr>
-            <tr>
-              <td><span class="tag">Подбор/коррекция терапии</span></td>
-              <td>1 раз в 1–3 месяца</td>
-            </tr>
-            <tr>
-              <td><span class="tag">Высокий/очень высокий СС-риск</span></td>
-              <td>не реже 1 раза в 3 месяца</td>
-            </tr>
-            <tr>
-              <td><span class="tag">После госпитализации</span> по поводу осложнений</td>
-              <td>в течение 14 дней после выписки</td>
-            </tr>
-          </tbody>
-        </table>
-        <details>
-          <summary>Внеплановые визиты</summary>
-          <p>Допускается внеплановый визит при ухудшении самочувствия или подъёме артериального давления.</p>
-        </details>
-      </section>
-
-      <section class="card" id="diagnostics">
-        <div class="section-title">
-          <h3>5. Обязательный диагностический минимум</h3>
-          <div class="kicker">Первичный этап и динамика</div>
+          <!-- Эти ссылки заработают после того, как вы добавите файлы в репозиторий (см. инструкцию ниже) -->
+          <a class="btn" style="text-decoration:none;display:inline-block"
+             id="downloadPdfLink" href="assets/bp-diary-30days.pdf" download>Скачать PDF (30 дней)</a>
+          <a class="btn" style="text-decoration:none;display:inline-block"
+             id="downloadXlsxLink" href="assets/bp-diary-30days.xlsx" download>Скачать XLSX (30 дней)</a>
         </div>
 
-        <div class="cols">
-          <div>
-            <div class="muted"><b>Первичный этап (включение в ДН)</b></div>
-            <ul>
-              <li>оценка факторов риска (курение, ожирение, гиподинамия);</li>
-              <li>измерение АД (в т.ч. на обеих руках);</li>
-              <li>оценка ИМТ;</li>
-              <li>осмотр врача-офтальмолога;</li>
-              <li>общий анализ крови (ОАК);</li>
-              <li>биохимический анализ крови: креатинин, глюкоза, липидограмма;</li>
-              <li>альбумин в моче;</li>
-              <li>общий анализ мочи (ОАМ);</li>
-              <li>ЭКГ;</li>
-              <li>эхокардиограмма (ЭхоКГ).</li>
-            </ul>
+        <div id="bpDiary" hidden style="margin-top:12px">
+          <div class="note">
+            Формат ввода АД: <span class="mono">120/80</span>. Пульс — число. Поля сохраняются автоматически в браузере.
           </div>
-          <div>
-            <div class="muted"><b>В динамике (не реже 1 раза в год)</b></div>
-            <ul>
-              <li>ОАК;</li>
-              <li>ОАМ;</li>
-              <li>креатинин;</li>
-              <li>липидный профиль;</li>
-              <li>ЭКГ;</li>
-              <li>ЭхоКГ.</li>
-            </ul>
+
+          <div class="hr"></div>
+
+          <table id="bpDiaryTable">
+            <thead>
+              <tr>
+                <th style="width:54px">День</th>
+                <th style="width:140px">Дата</th>
+                <th style="width:130px">Утро АД</th>
+                <th style="width:110px">Утро пульс</th>
+                <th style="width:130px">Вечер АД</th>
+                <th style="width:110px">Вечер пульс</th>
+                <th>Самочувствие</th>
+                <th>Комментарий</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+
+          <div class="table-actions">
+            <button class="btn" id="downloadDiaryCsv" type="button">Скачать заполненный дневник (CSV)</button>
+            <button class="btn secondary" id="btnStats" type="button">Обновить сводку</button>
+          </div>
+
+          <div class="kpi" id="kpi" style="margin-top:10px">
+            <div class="card">
+              <div class="small">Среднее утро (САД/ДАД)</div>
+              <div class="val" id="avgMorning">—</div>
+              <div class="small" id="avgMorningNote"></div>
+            </div>
+            <div class="card">
+              <div class="small">Среднее вечер (САД/ДАД)</div>
+              <div class="val" id="avgEvening">—</div>
+              <div class="small" id="avgEveningNote"></div>
+            </div>
+            <div class="card">
+              <div class="small">Дней с повышением (ориентир)</div>
+              <div class="val" id="highDays">—</div>
+              <div class="small">Порог: ≥140/90 хотя бы в одном измерении</div>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="note warn">
+            Важно: инструмент не заменяет клиническое решение. При симптомах поражения органов-мишеней (боль в груди, неврологический дефицит, выраженная одышка и т.п.) — действовать по неотложным алгоритмам.
           </div>
         </div>
+      </section>
 
-        <details>
-          <summary>Зачем выделены «первичный» и «годовой» этапы</summary>
+      <!-- RIGHT -->
+      <aside class="card">
+        <h2>Контент по режимам</h2>
+        <p>Эти блоки реально переключаются. Отметьте, что должно быть видно пациенту, а что — врачу.</p>
+
+        <div class="hr"></div>
+
+        <section data-role="patient">
+          <h2>Пациент</h2>
           <p>
-            Это снижает вариабельность ведения: первичный этап фиксирует базовый профиль риска и орган-мишени,
-            годовой — обеспечивает регулярный контроль осложнений и безопасности лечения.
+            Цель: регулярный самоконтроль и фиксация показателей. Измеряйте АД после 5 минут покоя, на одной и той же руке,
+            манжета по размеру, без кофе/курения за 30 минут до измерения.
           </p>
-        </details>
-      </section>
+          <ul style="margin:0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.5">
+            <li>Записывайте утреннее и вечернее АД + пульс.</li>
+            <li>Отмечайте самочувствие и возможные триггеры (стресс, недосып, солёная еда).</li>
+            <li>Не меняйте терапию самостоятельно; решение — совместно с врачом.</li>
+          </ul>
+        </section>
 
-      <section class="card" id="effectiveness">
-        <div class="section-title">
-          <h3>6. Контроль эффективности лечения</h3>
-          <div class="kicker">Критерии оценки на визитах</div>
-        </div>
-        <ul>
-          <li>достижение целевого АД (&lt;140/90 мм рт. ст., при хорошей переносимости — ниже);</li>
-          <li>отсутствие выраженных побочных эффектов терапии;</li>
-          <li>стабильные показатели функции почек;</li>
-          <li>отсутствие признаков прогрессирования поражения органов-мишеней;</li>
-          <li>удовлетворительная приверженность лечению.</li>
-        </ul>
-      </section>
-
-      <section class="card" id="decomp">
-        <div class="section-title">
-          <h3>7. Признаки декомпенсации и коррекция тактики</h3>
-          <div class="kicker">Когда усиливать наблюдение и менять маршрут</div>
-        </div>
-        <div class="muted"><b>Признаки декомпенсации:</b></div>
-        <ul>
-          <li>стойкое АД ≥160/100 мм рт. ст. несмотря на терапию;</li>
-          <li>учащение гипертонических кризов;</li>
-          <li>появление или нарастание одышки, отёков;</li>
-          <li>ухудшение функции почек;</li>
-          <li>появление неврологической симптоматики.</li>
-        </ul>
-        <div class="muted" style="margin-top:10px"><b>Действия врача-терапевта:</b></div>
-        <ul>
-          <li>пересмотреть терапию;</li>
-          <li>усилить кратность наблюдения;</li>
-          <li>направить пациента на консультацию специалиста.</li>
-        </ul>
-      </section>
-
-      <section class="card" id="consults">
-        <div class="section-title">
-          <h3>8. Показания для консультаций узких специалистов</h3>
-          <div class="kicker">Кого и когда подключать</div>
-        </div>
-        <table aria-label="Консультации специалистов">
-          <thead>
-            <tr>
-              <th>Специалист</th>
-              <th>Показания</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><b>Кардиолог</b></td>
-              <td>
-                <ul>
-                  <li>резистентная артериальная гипертензия;</li>
-                  <li>высокий и очень высокий сердечно-сосудистый риск;</li>
-                  <li>подозрение на вторичную АГ;</li>
-                  <li>необходимость подбора комбинированной терапии.</li>
-                </ul>
-              </td>
-            </tr>
-            <tr>
-              <td><b>Невролог</b></td>
-              <td>
-                <ul>
-                  <li>признаки цереброваскулярной недостаточности;</li>
-                  <li>перенесённый инсульт или ТИА.</li>
-                </ul>
-              </td>
-            </tr>
-            <tr>
-              <td><b>Нефролог</b></td>
-              <td>
-                <ul>
-                  <li>снижение СКФ;</li>
-                  <li>протеинурия;</li>
-                  <li>подозрение на ренальную гипертензию.</li>
-                </ul>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <section class="card" id="hospital">
-        <div class="section-title">
-          <h3>9. Показания к госпитализации</h3>
-          <div class="kicker">Ситуации, требующие стационара</div>
-        </div>
-        <ul>
-          <li>гипертонический криз с осложнениями;</li>
-          <li>подозрение на острое нарушение мозгового кровообращения;</li>
-          <li>острый коронарный синдром;</li>
-          <li>быстрое прогрессирование поражения органов-мишеней.</li>
-        </ul>
-      </section>
-
-      <section class="card" id="homebp">
-        <div class="section-title">
-          <h3>Домашний дневник артериального давления</h3>
-          <div class="kicker">Асинхронный контроль между визитами</div>
-        </div>
-        <div class="muted" style="line-height:1.5">
-          Пациенту рекомендуется вести дневник АД в домашних условиях с последующей оценкой на приёме.
-          Допускается бумажный или электронный формат без передачи персональных данных.
-        </div>
-        <table aria-label="Домашний дневник АД">
-          <thead>
-            <tr>
-              <th>Дата</th>
-              <th>Время</th>
-              <th>АД (мм рт. ст.)</th>
-              <th>Пульс</th>
-              <th>Самочувствие</th>
-              <th>Комментарий</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>__ / __ / ____</td>
-              <td>утро</td>
-              <td>_____ / _____</td>
-              <td>_____</td>
-              <td>удовлетворительное</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>__ / __ / ____</td>
-              <td>вечер</td>
-              <td>_____ / _____</td>
-              <td>_____</td>
-              <td></td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="noprint" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap">
-          <button class="btn" id="btnShowBP">Показать дневник АД (30 дней)</button>
-          <button class="btn" id="btnDownloadBP">Скачать дневник АД (PDF, 30 дней)</button>
-        </div>
-        <div id="bpPreview" style="display:none; margin-top:10px"></div>
-        <details>
-          <summary>Как интерпретировать дневник</summary>
+        <section data-role="doctor">
+          <h2>Врач</h2>
           <p>
-            Для оценки эффективности терапии учитываются средние значения АД за 5–7 дней.
-            Стойкие показатели ≥140/90 мм рт. ст. или выраженные колебания требуют коррекции тактики.
+            Быстрый просмотр дневника: ориентируйтесь на средние значения, вариабельность, частоту превышений порога,
+            приверженность и симптомы. При необходимости — корректировка терапии, дообследование, оценка вторичных причин.
           </p>
-        </details>
-      </section>
+          <ul style="margin:0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.5">
+            <li>Контроль техники измерения и условия (избегать псевдогипертензии).</li>
+            <li>Оценка “белого халата” / маскированной АГ по данным дневника.</li>
+            <li>Согласовать цели АД с риском и коморбидностью; фиксировать изменения терапии.</li>
+          </ul>
+        </section>
 
-      <section class="card" id="docs">
-        <div class="section-title">
-          <h3>10. Документация</h3>
-          <div class="kicker">Что обязательно фиксировать</div>
-        </div>
-        <ul>
-          <li>вести индивидуальный план диспансерного наблюдения пациента с ГБ;</li>
-          <li>фиксировать результаты осмотров и обследований в медицинской документации;</li>
-          <li>включать пациента в реестр диспансерных больных участка;</li>
-          <li>ежегодно проводить оценку полноты диспансерного наблюдения.</li>
-        </ul>
+        <div class="hr"></div>
 
-        <div class="cols" style="margin-top:10px">
-          <div>
-            <div class="muted"><b>Чек-лист первичного визита</b></div>
-            <ul class="checklist">
-              <li><input type="checkbox" class="cb" /><div><b>Диагноз/стадия подтверждены</b><div class="small">в т.ч. оценка факторов риска</div></div></li>
-              <li><input type="checkbox" class="cb" /><div><b>СС-риск определён</b><div class="small">зафиксировать категорию риска</div></div></li>
-              <li><input type="checkbox" class="cb" /><div><b>АД на обеих руках</b><div class="small">зафиксировать исходные значения</div></div></li>
-              <li><input type="checkbox" class="cb" /><div><b>Диагностический минимум назначен</b><div class="small">ОАК/ОАМ/биохимия/ЭКГ/ЭхоКГ/офтальмолог</div></div></li>
-              <li><input type="checkbox" class="cb" /><div><b>План наблюдения оформлен</b><div class="small">срок следующего визита</div></div></li>
-            </ul>
-          </div>
-          <div>
-            <div class="muted"><b>Чек-лист годового контроля</b></div>
-            <ul class="checklist">
-              <li><input type="checkbox" class="cb" /><div><b>ОАК</b></div></li>
-              <li><input type="checkbox" class="cb" /><div><b>ОАМ</b></div></li>
-              <li><input type="checkbox" class="cb" /><div><b>Креатинин</b><div class="small">контроль функции почек</div></div></li>
-              <li><input type="checkbox" class="cb" /><div><b>Липидный профиль</b></div></li>
-              <li><input type="checkbox" class="cb" /><div><b>ЭКГ</b></div></li>
-              <li><input type="checkbox" class="cb" /><div><b>ЭхоКГ</b></div></li>
-            </ul>
-          </div>
+        <div class="note">
+          Подсказка: если PDF/XLSX не скачиваются — значит в репозитории нет файлов по путям
+          <span class="mono">assets/bp-diary-30days.pdf</span> и <span class="mono">assets/bp-diary-30days.xlsx</span>.
         </div>
-      </section>
+      </aside>
     </div>
 
-    <section class="card" id="qr">
-        <div class="section-title">
-          <h3>QR-страница для пациента (1 экран)</h3>
-          <div class="kicker">Кратко и понятно — открыть с телефона</div>
-        </div>
-        <div class="muted" style="line-height:1.55">
-          Эта страница предназначена для быстрого доступа пациента по QR-коду.
-          Не содержит персональных данных и используется как памятка между визитами.
-        </div>
-        <div class="cols" style="margin-top:12px">
-          <div>
-            <div class="muted"><b>Что делать ежедневно</b></div>
-            <ul>
-              <li>измерять артериальное давление утром и вечером;</li>
-              <li>фиксировать показатели в дневнике АД;</li>
-              <li>принимать препараты строго по назначению.</li>
-            </ul>
-            <div class="muted" style="margin-top:8px"><b>Когда плановый визит</b></div>
-            <ul>
-              <li>если АД стабильное — 1 раз в 6 месяцев;</li>
-              <li>при подборе лечения — 1 раз в 1–3 месяца;</li>
-              <li>после госпитализации — в течение 14 дней.</li>
-            </ul>
-          </div>
-          <div>
-            <div class="muted"><b>Когда обратиться срочно</b></div>
-            <ul>
-              <li>АД ≥180/110 мм рт. ст.;</li>
-              <li>внезапная слабость, онемение лица или конечностей;</li>
-              <li>резкая боль в груди, выраженная одышка;</li>
-              <li>частые гипертонические кризы.</li>
-            </ul>
-            <div class="muted" style="margin-top:8px"><b>Важно помнить</b></div>
-            <ul>
-              <li>не отменять препараты самостоятельно;</li>
-              <li>брать дневник АД на каждый приём;</li>
-              <li>сообщать врачу о побочных эффектах.</li>
-            </ul>
-          </div>
-        </div>
-        <details>
-          <summary>Как использовать QR-код в проекте</summary>
-          <p>
-            QR-код размещается в приложении к проекту, на чек-листе приёма или в кабинете врача.
-            Ссылка ведёт на эту страницу и открывается на любом смартфоне без авторизации.
-          </p>
-        </details>
-      </section>
+    <div class="footer">
+      <div>Версия: <span class="mono">index.html (single-file)</span>. Хостинг: GitHub Pages.</div>
+    </div>
 
-      <footer>
-      <div>© Регламент ДН по ГБ • v1.0 • <span id="today2"></span></div>
-      <div>БУ "Югорская городская больница"</div>
-    </footer>
   </div>
 
   <script>
-    let currentMode = 'doctor';
-    const doctorSections = ['duties','diagnostics','decomp','consults','hospital','docs','effectiveness'];
-    const patientSections = ['homebp','visits','goals'];
+  (function () {
+    // -----------------------
+    // Mode switch (Doctor/Patient)
+    // -----------------------
+    const KEY_MODE = "gb_mode";
+    const modeLabel = document.getElementById("modeLabel");
+    const btnD = document.getElementById("modeDoctor");
+    const btnP = document.getElementById("modePatient");
 
-    function setMode(mode){
-      currentMode = mode;
-      doctorSections.forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display = mode==='doctor'?'block':'none'; });
-      patientSections.forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display = mode==='patient'?'block':'none'; });
+    function applyMode(mode) {
+      const isDoctor = mode === "doctor";
+      document.querySelectorAll("[data-role='doctor']").forEach(el => el.hidden = !isDoctor);
+      document.querySelectorAll("[data-role='patient']").forEach(el => el.hidden = isDoctor);
+
+      btnD?.classList.toggle("active", isDoctor);
+      btnP?.classList.toggle("active", !isDoctor);
+      btnD?.setAttribute("aria-pressed", String(isDoctor));
+      btnP?.setAttribute("aria-pressed", String(!isDoctor));
+      if (modeLabel) modeLabel.textContent = isDoctor ? "Врач" : "Пациент";
+
+      localStorage.setItem(KEY_MODE, mode);
     }
 
-    const d = new Date();
-    const fmt = new Intl.DateTimeFormat('ru-RU', { year:'numeric', month:'2-digit', day:'2-digit' });
-    document.getElementById('today').textContent = fmt.format(d);
-    setMode('doctor');
+    btnD?.addEventListener("click", () => applyMode("doctor"));
+    btnP?.addEventListener("click", () => applyMode("patient"));
 
-    document.getElementById('modeDoctor').addEventListener('click', ()=> setMode('doctor'));
-    document.getElementById('modePatient').addEventListener('click', ()=> setMode('patient'));
+    const savedMode = localStorage.getItem(KEY_MODE);
+    applyMode(savedMode === "patient" ? "patient" : "doctor");
 
-    document.getElementById('today2').textContent = fmt.format(d);
+    // -----------------------
+    // Diary (30 days) + persistence
+    // -----------------------
+    const KEY_DIARY = "gb_bp_diary_v1";
+    const wrap = document.getElementById("bpDiary");
+    const btnToggle = document.getElementById("toggleDiary");
+    const tbody = document.querySelector("#bpDiaryTable tbody");
+    const btnCsv = document.getElementById("downloadDiaryCsv");
+    const btnReset = document.getElementById("btnReset");
+    const btnStats = document.getElementById("btnStats");
 
-    // Search highlight
-    const q = document.getElementById('q');
-
-    function clearHighlights(){
-      document.querySelectorAll('mark.__hl').forEach(m=>{
-        const t = document.createTextNode(m.textContent);
-        m.replaceWith(t);
-      });
-    }
-
-    function highlight(term){
-      if(!term) return;
-      const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
-        acceptNode(node){
-          if(!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-          const p = node.parentElement;
-          if(!p) return NodeFilter.FILTER_REJECT;
-          const tag = p.tagName.toLowerCase();
-          if(['script','style','input','textarea'].includes(tag)) return NodeFilter.FILTER_REJECT;
-          return NodeFilter.FILTER_ACCEPT;
-        }
-      });
-
-      const re = new RegExp(term.replace(/[.*+?^${}()|[\]\]/g, '\$&'), 'gi');
-      const nodes = [];
-      while(walk.nextNode()) nodes.push(walk.currentNode);
-
-      nodes.forEach(node=>{
-        if(!re.test(node.nodeValue)) return;
-        const span = document.createElement('span');
-        span.innerHTML = node.nodeValue.replace(re, m=>`<mark class="__hl" style="background:rgba(110,231,255,.25); color:inherit; padding:0 2px; border-radius:6px;">${m}</mark>`);
-        node.replaceWith(span);
-      });
-    }
-
-    q.addEventListener('input', ()=>{
-      clearHighlights();
-      const term = q.value.trim();
-      if(term.length < 2) return;
-      highlight(term);
-    });
-
-    // Checklist controls
-    const cbs = () => Array.from(document.querySelectorAll('input.cb'));
-    document.getElementById('btnCheckAll').addEventListener('click', ()=> cbs().forEach(x=>x.checked=true));
-    document.getElementById('btnUncheckAll').addEventListener('click', ()=> cbs().forEach(x=>x.checked=false));
-
-    // Show BP diary (30 days)
-    document.getElementById('btnShowBP')?.addEventListener('click', ()=>{
-      const box = document.getElementById('bpPreview');
-      if(!box) return;
-      if(box.innerHTML.trim()===''){
-        const rows = Array.from({length:30}).map((_,i)=>
-          `<tr><td>${i+1}</td><td>утро</td><td></td><td></td><td></td><td></td></tr>`+
-          `<tr><td>${i+1}</td><td>вечер</td><td></td><td></td><td></td><td></td></tr>`
-        ).join('');
-        box.innerHTML = `
-          <table aria-label="Дневник АД (30 дней)">
-            <thead>
-              <tr><th>День</th><th>Время</th><th>АД</th><th>Пульс</th><th>Самочувствие</th><th>Комментарий</th></tr>
-            </thead>
-            <tbody>${rows}</tbody>
-          </table>`;
+    function loadDiary() {
+      try {
+        return JSON.parse(localStorage.getItem(KEY_DIARY) || "[]");
+      } catch {
+        return [];
       }
-      box.style.display = box.style.display==='none' ? 'block' : 'none';
+    }
+
+    function saveDiary(data) {
+      localStorage.setItem(KEY_DIARY, JSON.stringify(data));
+    }
+
+    function ensureDiarySize(data, n) {
+      const out = Array.isArray(data) ? data.slice(0, n) : [];
+      while (out.length < n) {
+        out.push({ date:"", m_bp:"", m_hr:"", e_bp:"", e_hr:"", feel:"", note:"" });
+      }
+      return out;
+    }
+
+    function buildDiary() {
+      if (!tbody) return;
+
+      const stored = ensureDiarySize(loadDiary(), 30);
+      tbody.innerHTML = "";
+
+      for (let i = 0; i < 30; i++) {
+        const row = stored[i];
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td><input type="date" data-k="date" value="${escapeHtml(row.date)}"></td>
+          <td><input placeholder="120/80" data-k="m_bp" value="${escapeHtml(row.m_bp)}"></td>
+          <td><input placeholder="70" data-k="m_hr" value="${escapeHtml(row.m_hr)}"></td>
+          <td><input placeholder="120/80" data-k="e_bp" value="${escapeHtml(row.e_bp)}"></td>
+          <td><input placeholder="70" data-k="e_hr" value="${escapeHtml(row.e_hr)}"></td>
+          <td><input placeholder="самочувствие" data-k="feel" value="${escapeHtml(row.feel)}"></td>
+          <td><input placeholder="комментарий" data-k="note" value="${escapeHtml(row.note)}"></td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      // Save on input
+      tbody.querySelectorAll("input").forEach(inp => {
+        inp.addEventListener("input", () => {
+          const data = readFromTable();
+          saveDiary(data);
+        });
+      });
+
+      saveDiary(stored);
+      updateStats();
+    }
+
+    function escapeHtml(s){
+      return String(s ?? "")
+        .replaceAll("&","&amp;").replaceAll("<","&lt;")
+        .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+        .replaceAll("'","&#39;");
+    }
+
+    function readFromTable() {
+      const data = [];
+      if (!tbody) return data;
+      [...tbody.querySelectorAll("tr")].forEach(tr => {
+        const obj = { date:"", m_bp:"", m_hr:"", e_bp:"", e_hr:"", feel:"", note:"" };
+        tr.querySelectorAll("input[data-k]").forEach(inp => {
+          obj[inp.getAttribute("data-k")] = inp.value.trim();
+        });
+        data.push(obj);
+      });
+      return data;
+    }
+
+    function parseBP(bp) {
+      // "120/80" -> {sys:120,dia:80} else null
+      const m = String(bp || "").trim().match(/^(\d{2,3})\s*\/\s*(\d{2,3})$/);
+      if (!m) return null;
+      const sys = Number(m[1]), dia = Number(m[2]);
+      if (!Number.isFinite(sys) || !Number.isFinite(dia)) return null;
+      return { sys, dia };
+    }
+
+    function updateStats() {
+      const data = ensureDiarySize(loadDiary(), 30);
+
+      let ms=0, md=0, mc=0;
+      let es=0, ed=0, ec=0;
+      let high=0;
+
+      for (const r of data) {
+        const mb = parseBP(r.m_bp);
+        const eb = parseBP(r.e_bp);
+
+        if (mb){ ms += mb.sys; md += mb.dia; mc++; if (mb.sys >= 140 || mb.dia >= 90) high++; }
+        if (eb){ es += eb.sys; ed += eb.dia; ec++; if (eb.sys >= 140 || eb.dia >= 90) high++; }
+      }
+
+      const avgMorning = document.getElementById("avgMorning");
+      const avgEvening = document.getElementById("avgEvening");
+      const highDays = document.getElementById("highDays");
+      const avgMorningNote = document.getElementById("avgMorningNote");
+      const avgEveningNote = document.getElementById("avgEveningNote");
+
+      if (avgMorning) avgMorning.textContent = mc ? `${Math.round(ms/mc)}/${Math.round(md/mc)}` : "—";
+      if (avgEvening) avgEvening.textContent = ec ? `${Math.round(es/ec)}/${Math.round(ed/ec)}` : "—";
+      if (highDays) highDays.textContent = String(high);
+
+      if (avgMorningNote) avgMorningNote.textContent = mc ? `учтено измерений: ${mc}` : "нет данных";
+      if (avgEveningNote) avgEveningNote.textContent = ec ? `учтено измерений: ${ec}` : "нет данных";
+    }
+
+    btnToggle?.addEventListener("click", () => {
+      if (!wrap) return;
+      wrap.hidden = !wrap.hidden;
+      btnToggle.textContent = wrap.hidden ? "Показать дневник" : "Скрыть дневник";
+      if (!wrap.hidden && (!tbody || tbody.children.length === 0)) buildDiary();
     });
 
-    // Download BP diary (30 days)
-    document.getElementById('btnDownloadBP')?.addEventListener('click', ()=>{
-      const w = window.open('', '_blank');
-      const rows = Array.from({length:30}).map(()=>
-        '<tr><td>&nbsp;</td><td>утро</td><td></td><td></td><td></td><td></td></tr>'+
-        '<tr><td>&nbsp;</td><td>вечер</td><td></td><td></td><td></td><td></td></tr>'
-      ).join('');
-      w.document.write(`<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>Дневник артериального давления (30 дней)</title>
-      <style>
-        body{font-family:Arial, sans-serif; margin:24px}
-        h1{font-size:18px}
-        table{width:100%; border-collapse:collapse; margin-top:16px}
-        th,td{border:1px solid #000; padding:6px; font-size:11px; text-align:center}
-        .small{font-size:11px}
-      </style></head><body>
-      <h1>Дневник артериального давления (30 дней)</h1>
-      <div class="small">ФИО: ____________ &nbsp;&nbsp; Период: ____________________________</div>
-      <table>
-        <tr><th>Дата</th><th>Время</th><th>АД (мм рт. ст.)</th><th>Пульс</th><th>Самочувствие</th><th>Комментарий</th></tr>
-        ${rows}
-      </table>
-      <script>window.print();<\/script>
-      </body></html>`);
-      w.document.close();
+    btnStats?.addEventListener("click", updateStats);
+
+    btnCsv?.addEventListener("click", () => {
+      const rows = [];
+      rows.push(["День","Дата","Утро АД","Утро пульс","Вечер АД","Вечер пульс","Самочувствие","Комментарий"]);
+      const data = ensureDiarySize(loadDiary(), 30);
+      data.forEach((r, i) => {
+        rows.push([String(i+1), r.date, r.m_bp, r.m_hr, r.e_bp, r.e_hr, r.feel, r.note]);
+      });
+
+      const csv = rows
+        .map(r => r.map(v => `"${String(v ?? "").replaceAll('"','""')}"`).join(";"))
+        .join("\n");
+
+      const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "bp-diary-30days.csv";
+      a.click();
+      URL.revokeObjectURL(a.href);
     });
 
-    // Print
-    document.getElementById('btnPrint').addEventListener('click', ()=> window.print());
-
-    // Reset
-    document.getElementById('btnReset').addEventListener('click', ()=>{
-      q.value='';
-      clearHighlights();
-      cbs().forEach(x=>x.checked=false);
-      location.hash = '#top';
-   <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const doctorSections = ['duties','diagnostics','decomp','consults','hospital','docs','effectiveness'];
-  const patientSections = ['homebp','visits','goals'];
-
-  const btnDoctor = document.getElementById('modeDoctor');
-  const btnPatient = document.getElementById('modePatient');
-
-  function setBtnActive(mode){
-    if (btnDoctor) btnDoctor.style.borderColor = (mode === 'doctor') ? 'rgba(110,231,255,.55)' : '';
-    if (btnPatient) btnPatient.style.borderColor = (mode === 'patient') ? 'rgba(110,231,255,.55)' : '';
-  }
-
-  function showOnly(idsToShow){
-    // показываем только то, что перечислено; остальные из двух списков — скрываем
-    const all = [...new Set([...doctorSections, ...patientSections])];
-    all.forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.style.display = idsToShow.includes(id) ? 'block' : 'none';
+    btnReset?.addEventListener("click", () => {
+      if (!confirm("Сбросить сохранённые локально данные дневника?")) return;
+      localStorage.removeItem(KEY_DIARY);
+      if (tbody) tbody.innerHTML = "";
+      if (wrap && !wrap.hidden) buildDiary();
+      updateStats();
     });
-  }
 
-  function setMode(mode){
-    localStorage.setItem('gb_mode', mode);
-    setBtnActive(mode);
-    if (mode === 'doctor') showOnly(doctorSections);
-    else showOnly(patientSections);
-  }
-
-  // навешиваем события только если кнопки реально найдены
-  if (btnDoctor) btnDoctor.addEventListener('click', () => setMode('doctor'));
-  if (btnPatient) btnPatient.addEventListener('click', () => setMode('patient'));
-
-  // стартовый режим
-  const saved = localStorage.getItem('gb_mode');
-  setMode(saved === 'patient' ? 'patient' : 'doctor');
-});
-</script>
+    // Prebuild stats silently (does not require table render)
+    updateStats();
+  })();
+  </script>
 </body>
 </html>
