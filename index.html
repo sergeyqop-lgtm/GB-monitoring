@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <title>Моё давление (дневник самоконтроля АД)</title>
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#3a8f6a">
-<link rel="icon" href="assets/icon-192.png">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#3a8f6a">
+  <link rel="icon" href="assets/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
   <style>
     :root{
@@ -79,6 +80,7 @@
     .grid{display:grid;grid-template-columns:1.3fr .7fr;gap:14px;margin-top:14px}
     @media (max-width: 980px){.grid{grid-template-columns:1fr}}
 
+    /* В режиме Пациент скрываем инструменты врача */
     body.mode-patient .grid{grid-template-columns:1fr}
     body.mode-patient #doctorAside{display:none}
 
@@ -93,6 +95,7 @@
     .note{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.45}
     .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
 
+    /* таблица */
     .tableWrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:16px}
     table{min-width:1050px;width:100%;border-collapse:collapse}
     th,td{border:1px solid var(--line);padding:8px;text-align:center;font-size:13px}
@@ -110,6 +113,7 @@
     }
     input:focus{border-color:#7dd3a7;box-shadow:0 0 0 4px rgba(125,211,167,.25)}
 
+    /* Подсветка */
     .field-ok input{background:var(--okBg);border-color:var(--okLine)}
     .field-hi input, .field-high input{background:var(--hiBg);border-color:var(--hiLine)}
     .field-low input{background:var(--lowBg);border-color:var(--lowLine)}
@@ -123,39 +127,42 @@
 
     .footer{margin-top:20px;font-size:12px;color:var(--muted);line-height:1.45}
 
+    /* колонки */
     .col-day{width:60px}
     .col-date{width:170px}
     .col-bp{width:170px}
     .col-hr{width:120px}
     .col-note{min-width:240px}
 
+    /* QR modal (ВАЖНО: НЕ внутри @media print) */
+    .modalBack{
+      position:fixed; inset:0; background:rgba(0,0,0,.35);
+      display:none; align-items:center; justify-content:center;
+      padding:16px; z-index:9999;
+    }
+    .modalBack.show{display:flex}
+    .modal{
+      width:min(520px, 100%);
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:20px;
+      box-shadow:0 18px 40px rgba(0,0,0,.18);
+      padding:16px;
+    }
+    .modalTop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .modal h3{margin:0;font-size:18px}
+    .qrBox{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:12px}
+    .qrBox img{width:220px;height:220px;border:1px solid var(--line);border-radius:14px;background:#fff}
+    .qrHint{min-width:220px;flex:1;color:var(--muted);font-size:13px;line-height:1.45}
+    .qrLink{word-break:break-all;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;color:var(--text)}
+
+    /* Печатная версия отчёта врача */
     @media print{
       body{background:#fff}
       header, .grid > section.card, #toggleChart, #togglePatientChart, #csvFile, #btnClearImport, .toolbar .btn, .badge{display:none !important}
       #doctorAside{display:block !important;box-shadow:none;border:none}
       .wrap{max-width:100%;padding:0}
       .card{border:none;box-shadow:none}
-      /* QR modal */
-.modalBack{
-  position:fixed; inset:0; background:rgba(0,0,0,.35);
-  display:none; align-items:center; justify-content:center;
-  padding:16px; z-index:9999;
-}
-.modalBack.show{display:flex}
-.modal{
-  width:min(520px, 100%);
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:20px;
-  box-shadow:0 18px 40px rgba(0,0,0,.18);
-  padding:16px;
-}
-.modalTop{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.modal h3{margin:0;font-size:18px}
-.qrBox{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:12px}
-.qrBox img{width:220px;height:220px;border:1px solid var(--line);border-radius:14px;background:#fff}
-.qrHint{min-width:220px;flex:1;color:var(--muted);font-size:13px;line-height:1.45}
-.qrLink{word-break:break-all;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;color:var(--text)}
     }
   </style>
 </head>
@@ -165,7 +172,7 @@
 
   <header>
     <div>
-      <h1>Умная система удалённого мониторинга артериального давления</h1>
+      <h1>Моё давление</h1>
       <div class="subtitle">Для пациента и врача: дневник самоконтроля и аналитическая сводка за период наблюдения.</div>
       <div class="org">БУ «Югорская городская больница»</div>
       <div class="toolbar" style="margin-top:10px">
@@ -183,31 +190,19 @@
 
   <div class="grid">
 
+    <!-- ЛЕВАЯ КОЛОНКА: ДНЕВНИК ПАЦИЕНТА -->
     <section class="card">
       <h2>Дневник артериального давления (30 дней)</h2>
       <div class="subtitle" style="margin-top:6px;">
-        Формат АД: <span class="mono">120/80</span>.
-        Можно вводить без слеша: <span class="mono">12080 → 120/80</span>, <span class="mono">8040 → 80/40</span>.
-        <br>Ориентиры: низкие (САД &lt; 90 или ДАД &lt; 60) — голубой; превышение ≥140/90 — персиковый.
-        Пульс: &lt;50 и &gt;100 — подсветка.
+        Формат АД: <span class="mono">120/80</span>. Можно вводить без слеша: <span class="mono">12080 → 120/80</span>, <span class="mono">8040 → 80/40</span>.<br>
+        Ориентиры: низкие (САД &lt; 90 или ДАД &lt; 60) — голубой; превышение ≥140/90 — персиковый. Пульс: &lt;50 и &gt;100 — подсветка.
       </div>
 
       <div class="toolbar" style="margin-top:10px;">
         <button class="btn secondary" id="toggleDiary" type="button">Показать дневник</button>
-        
-  <a class="btn secondary"
-     href="assets/bp-diary-30days.xlsx"
-     download
-     style="text-decoration:none;">
-    Чистый дневник АД xlsx
-  </a>
 
-  <a class="btn secondary"
-     href="assets/bp-diary-30days_ru.pdf"
-     download
-     style="text-decoration:none;">
-    Чистый дневник АД pdf
-  </a>
+        <a class="btn secondary" href="assets/bp-diary-30days.xlsx" download style="text-decoration:none;">Чистый дневник АД xlsx</a>
+        <a class="btn secondary" href="assets/bp-diary-30days_ru.pdf" download style="text-decoration:none;">Чистый дневник АД pdf</a>
 
         <button class="btn" id="exportCsv" type="button">Скачать заполненный дневник (CSV)</button>
       </div>
@@ -269,6 +264,7 @@
       </div>
     </section>
 
+    <!-- ПРАВАЯ КОЛОНКА: ИНСТРУМЕНТЫ ВРАЧА -->
     <aside class="card" id="doctorAside">
       <h2>Инструменты врача</h2>
       <div class="subtitle" style="margin-top:6px;">
@@ -359,6 +355,25 @@
 
 </div>
 
+<!-- QR-модалка ДОЛЖНА БЫТЬ ДО СКРИПТА -->
+<div class="modalBack" id="qrModal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
+    <div class="modalTop">
+      <h3 id="qrTitle">QR-код для открытия дневника</h3>
+      <button class="btn secondary" id="qrClose" type="button">Закрыть</button>
+    </div>
+
+    <div class="qrBox">
+      <img id="qrImg" alt="QR код" />
+      <div class="qrHint">
+        Наведи камеру телефона на QR-код — откроется страница проекта.<br><br>
+        Ссылка:
+        <div class="qrLink" id="qrLinkText"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   const DAYS = 30;
@@ -373,28 +388,26 @@
   const LOW_PULSE = 50;
   const HIGH_PULSE = 100;
 
-  // ---------------------
+  // =====================
   // Утилиты
-  // ---------------------
+  // =====================
   function safeInt(x){
     const n = Number(String(x||"").trim());
     return Number.isFinite(n) ? n : null;
   }
 
-  // ВАЖНО: исправлено, чтобы 8450 -> 84/50, а не 845/0,
-  // при этом 1208 остаётся 120/8 (прогрессивный ввод).
+  // Исправлено: 8450 -> 84/50, при этом 1208 остаётся 120/8 (прогрессивный ввод)
   function normalizeBP(value){
     const raw = String(value || "").trim();
     if (!raw) return "";
 
-    // Если пользователь ввёл слэш — НЕ ломаем формат
     if (raw.includes("/")) {
       const [a,b] = raw.split("/",2);
       const sys = (a||"").replace(/\D/g,"").slice(0,3).replace(/^0+(?=\d)/,"");
       const dia = (b||"").replace(/\D/g,"").slice(0,3).replace(/^0+(?=\d)/,"");
       if (!sys && !dia) return "";
-      if (raw.endsWith("/") && !dia) return (sys || "") + "/"; // пользователь ещё вводит ДАД
-      if (!dia) return (sys || "") + "/"; // безопасно
+      if (raw.endsWith("/") && !dia) return (sys || "") + "/";
+      if (!dia) return (sys || "") + "/";
       return (sys || "") + "/" + (dia || "");
     }
 
@@ -404,12 +417,9 @@
     if (n <= 3) return d;
 
     if (n === 4) {
-      // Правило:
-      // - если похоже на 2/2 (84 50, 80 40 и т.п.) — делаем 2/2
-      // - иначе (например 1208) — делаем 3/1 для прогрессивного ввода
       const a2 = Number(d.slice(0,2));
       const b2 = Number(d.slice(2,4));
-      const looks22 = (a2 >= 50 && a2 <= 99 && b2 >= 30 && b2 <= 99); // 84/50, 80/40 и т.п.
+      const looks22 = (a2 >= 50 && a2 <= 99 && b2 >= 30 && b2 <= 99);
       if (looks22) return d.slice(0,2) + "/" + d.slice(2,4);
 
       const s3 = Number(d.slice(0,3));
@@ -475,9 +485,9 @@
     return v;
   }
 
-  // ---------------------
+  // =====================
   // Режимы
-  // ---------------------
+  // =====================
   const btnDoc = document.getElementById("modeDoctor");
   const btnPat = document.getElementById("modePatient");
 
@@ -493,9 +503,9 @@
   btnPat?.addEventListener("click", ()=>setMode("patient"));
   setMode(localStorage.getItem("gb_mode") === "patient" ? "patient" : "doctor");
 
-  // ---------------------
+  // =====================
   // Дневник пациента (локально)
-  // ---------------------
+  // =====================
   const toggleDiary = document.getElementById("toggleDiary");
   const diaryWrap = document.getElementById("diary");
   const tbody = document.querySelector("#bpDiaryTable tbody");
@@ -503,16 +513,11 @@
   const btnRecalcPatient = document.getElementById("btnRecalcPatient");
 
   function loadDiary(){
-    try{
-      return JSON.parse(localStorage.getItem(LS_KEY) || "[]");
-    }catch{
-      return [];
-    }
+    try{ return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); }
+    catch{ return []; }
   }
 
-  function saveDiary(d){
-    localStorage.setItem(LS_KEY, JSON.stringify(d));
-  }
+  function saveDiary(d){ localStorage.setItem(LS_KEY, JSON.stringify(d)); }
 
   function ensureDiarySize(data){
     const out = Array.isArray(data) ? data.slice(0, DAYS) : [];
@@ -524,9 +529,7 @@
     const rows=[];
     [...tbody.querySelectorAll("tr")].forEach(tr=>{
       const obj={date:"", mbp:"", mhr:"", ebp:"", ehr:"", note:""};
-      tr.querySelectorAll("input[data-k]").forEach(inp=>{
-        obj[inp.dataset.k] = inp.value.trim();
-      });
+      tr.querySelectorAll("input[data-k]").forEach(inp=>{ obj[inp.dataset.k] = inp.value.trim(); });
       rows.push(obj);
     });
     return rows;
@@ -615,12 +618,13 @@
     if (!diaryWrap.hidden) buildDiary();
   });
 
-  // ---------------------
+  // =====================
   // Пациентская сводка
-  // ---------------------
+  // =====================
   function calcPatientStats(){
     const data = ensureDiarySize(loadDiary());
     const mSys=[], mDia=[], eSys=[], eDia=[];
+
     let low=0, high=0;
     let pLow=0, pHigh=0;
     let mN=0, eN=0;
@@ -640,6 +644,7 @@
         if (st === "low") low++;
         if (st === "high") high++;
       }
+
       const ps1 = pulseState(r.mhr);
       const ps2 = pulseState(r.ehr);
       if (ps1 === "low") pLow++;
@@ -656,9 +661,9 @@
     document.getElementById("p_pulse_events").textContent = `Пульс: <50 — ${pLow}, >100 — ${pHigh}`;
   }
 
-  // ---------------------
+  // =====================
   // Экспорт CSV пациентом
-  // ---------------------
+  // =====================
   const exportCsv = document.getElementById("exportCsv");
   exportCsv?.addEventListener("click", ()=>{
     const rows = [];
@@ -677,9 +682,9 @@
     URL.revokeObjectURL(a.href);
   });
 
-  // ---------------------
+  // =====================
   // График пациента
-  // ---------------------
+  // =====================
   const togglePatientChart = document.getElementById("togglePatientChart");
   const patientChartBlock = document.getElementById("patientChartBlock");
 
@@ -696,7 +701,8 @@
     ctx.clearRect(0,0,c.width,c.height);
 
     const data = ensureDiarySize(loadDiary());
-    const ptsSys=[], ptsDia=[];
+    const ptsSys=[];
+    const ptsDia=[];
 
     data.forEach((r,i)=>{
       const mb = parseBP(r.mbp);
@@ -751,9 +757,9 @@
     ctx.fillText(String(Math.round(yMin)), 8, padT+H);
   }
 
-  // ---------------------
+  // =====================
   // Импорт CSV врачу + аналитика
-  // ---------------------
+  // =====================
   const csvFile = document.getElementById("csvFile");
   const btnClearImport = document.getElementById("btnClearImport");
   const btnPrint = document.getElementById("btnPrint");
@@ -900,16 +906,17 @@
 
       if (mb){
         sysAll.push(mb.sys); diaAll.push(mb.dia);
-        sysM.push(mb.sys); diaM.push(mb.dia);
+        sysM.push(mb.sys);  diaM.push(mb.dia);
         minSys = Math.min(minSys, mb.sys); minDia = Math.min(minDia, mb.dia);
         maxSys = Math.max(maxSys, mb.sys); maxDia = Math.max(maxDia, mb.dia);
         const st = bpState(r.mbp);
         if (st === "high") high++;
         if (st === "low") low++;
       }
+
       if (eb){
         sysAll.push(eb.sys); diaAll.push(eb.dia);
-        sysE.push(eb.sys); diaE.push(eb.dia);
+        sysE.push(eb.sys);  diaE.push(eb.dia);
         minSys = Math.min(minSys, eb.sys); minDia = Math.min(minDia, eb.dia);
         maxSys = Math.max(maxSys, eb.sys); maxDia = Math.max(maxDia, eb.dia);
         const st = bpState(r.ebp);
@@ -926,13 +933,15 @@
     }
 
     const avgAll = fmtBP(avg(sysAll), avg(diaAll));
-    const avgM = fmtBP(avg(sysM), avg(diaM));
-    const avgE = fmtBP(avg(sysE), avg(diaE));
+    const avgM   = fmtBP(avg(sysM),   avg(diaM));
+    const avgE   = fmtBP(avg(sysE),   avg(diaE));
+
     const period = (minDate && maxDate) ? `${minDate} — ${maxDate}` : "—";
     const counts = `дней с датой: ${daysWithDate}; измерений: ${sysAll.length}; низкое АД: ${low}; ≥140/90: ${high}`;
+
     const minmax = sysAll.length ? `${minSys}/${minDia} — ${maxSys}/${maxDia}` : "—";
-    const med = sysAll.length ? `${Math.round(median(sysAll))}/${Math.round(median(diaAll))}` : "—";
-    const range = sysAll.length ? `${(maxSys-minSys)}/${(maxDia-minDia)}` : "—";
+    const med    = sysAll.length ? `${Math.round(median(sysAll))}/${Math.round(median(diaAll))}` : "—";
+    const range  = sysAll.length ? `${(maxSys-minSys)}/${(maxDia-minDia)}` : "—";
     const percentHigh = sysAll.length ? `${Math.round((high * 100) / sysAll.length)} %` : "—";
     const softFlags = `низкое АД: ${low}; пульс <50: ${pLow}; пульс >100: ${pHigh}`;
 
@@ -953,9 +962,9 @@
     if (!document.getElementById("chartBlock").hidden) drawDoctorChart(currentChartMode);
   }
 
-  // ---------------------
+  // =====================
   // График врача
-  // ---------------------
+  // =====================
   const toggleChart = document.getElementById("toggleChart");
   const chartBlock = document.getElementById("chartBlock");
   const chartAll = document.getElementById("chartAll");
@@ -982,18 +991,20 @@
 
     if (!importedRows.length) return;
 
-    const ptsSys=[], ptsDia=[];
+    const ptsSys=[];
+    const ptsDia=[];
+
     importedRows.forEach((r,i)=>{
       if (mode === "morning" || mode === "all"){
         const mb = parseBP(r.mbp);
-        if (mb){ ptsSys.push({x: i + (mode==="all"?0:0), y: mb.sys}); ptsDia.push({x: i + (mode==="all"?0:0), y: mb.dia}); }
+        if (mb){ ptsSys.push({x:i, y:mb.sys}); ptsDia.push({x:i, y:mb.dia}); }
       }
       if (mode === "evening" || mode === "all"){
         const eb = parseBP(r.ebp);
         if (eb){
           const shift = (mode === "all") ? 0.45 : 0;
-          ptsSys.push({x: i + shift, y: eb.sys});
-          ptsDia.push({x: i + shift, y: eb.dia});
+          ptsSys.push({x:i+shift, y:eb.sys});
+          ptsDia.push({x:i+shift, y:eb.dia});
         }
       }
     });
@@ -1044,64 +1055,46 @@
     ctx.fillText(String(Math.round(yMax)), 8, padT+10);
     ctx.fillText(String(Math.round(yMin)), 8, padT+H);
   }
-// =====================
-// QR-код "самораспространение"
-// =====================
-const PROJECT_URL = "https://sergeyqop-lgtm.github.io/GB-monitoring/";
 
-const btnQr = document.getElementById("btnQr");
-const qrModal = document.getElementById("qrModal");
-const qrClose = document.getElementById("qrClose");
-const qrImg = document.getElementById("qrImg");
-const qrLinkText = document.getElementById("qrLinkText");
+  // =====================
+  // QR-код
+  // =====================
+  const PROJECT_URL = "https://sergeyqop-lgtm.github.io/GB-monitoring/";
 
-// Генерация QR через внешний сервис (быстро и без библиотек).
-// Если хочешь полностью офлайн/без внешних сервисов — скажи, дам вариант с локальным QR-генератором (чуть больше кода).
-function buildQr(){
-  const size = 260;
-  const url = PROJECT_URL;
-  const api = "https://api.qrserver.com/v1/create-qr-code/";
-  qrImg.src = `${api}?size=${size}x${size}&data=${encodeURIComponent(url)}&margin=8`;
-  qrLinkText.textContent = url;
-}
+  const btnQr = document.getElementById("btnQr");
+  const qrModal = document.getElementById("qrModal");
+  const qrClose = document.getElementById("qrClose");
+  const qrImg = document.getElementById("qrImg");
+  const qrLinkText = document.getElementById("qrLinkText");
 
-function openQr(){
-  buildQr();
-  qrModal.classList.add("show");
-  qrModal.setAttribute("aria-hidden","false");
-}
+  function buildQr(){
+    const size = 260;
+    const api = "https://api.qrserver.com/v1/create-qr-code/";
+    qrImg.src = `${api}?size=${size}x${size}&data=${encodeURIComponent(PROJECT_URL)}&margin=8`;
+    qrLinkText.textContent = PROJECT_URL;
+  }
 
-function closeQr(){
-  qrModal.classList.remove("show");
-  qrModal.setAttribute("aria-hidden","true");
-}
+  function openQr(){
+    buildQr();
+    qrModal.classList.add("show");
+    qrModal.setAttribute("aria-hidden","false");
+  }
 
-btnQr?.addEventListener("click", openQr);
-qrClose?.addEventListener("click", closeQr);
-qrModal?.addEventListener("click", (e)=>{ if(e.target === qrModal) closeQr(); });
-document.addEventListener("keydown", (e)=>{ if(e.key === "Escape" && qrModal.classList.contains("show")) closeQr(); });
+  function closeQr(){
+    qrModal.classList.remove("show");
+    qrModal.setAttribute("aria-hidden","true");
+  }
 
-  // ---------------------
-  // Инициализация врача
-  // ---------------------
+  btnQr?.addEventListener("click", openQr);
+  qrClose?.addEventListener("click", closeQr);
+  qrModal?.addEventListener("click", (e)=>{ if(e.target === qrModal) closeQr(); });
+  document.addEventListener("keydown", (e)=>{ if(e.key === "Escape" && qrModal.classList.contains("show")) closeQr(); });
+
+  // =====================
+  // Инициализация
+  // =====================
   clearDoctor();
-<div class="modalBack" id="qrModal" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
-    <div class="modalTop">
-      <h3 id="qrTitle">QR-код для открытия дневника</h3>
-      <button class="btn secondary" id="qrClose" type="button">Закрыть</button>
-    </div>
 
-    <div class="qrBox">
-      <img id="qrImg" alt="QR код" />
-      <div class="qrHint">
-        Наведи камеру телефона на QR-код — откроется страница проекта.<br><br>
-        Ссылка:
-        <div class="qrLink" id="qrLinkText"></div>
-      </div>
-    </div>
-  </div>
-</div>
 })();
 </script>
 </body>
