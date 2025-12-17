@@ -1085,10 +1085,7 @@ document.addEventListener("keydown", (e)=>{ if(e.key === "Escape" && qrModal.cla
   // Инициализация врача
   // ---------------------
   clearDoctor();
-
-})();
-</script>
-  <div class="modalBack" id="qrModal" aria-hidden="true">
+<div class="modalBack" id="qrModal" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
     <div class="modalTop">
       <h3 id="qrTitle">QR-код для открытия дневника</h3>
@@ -1099,11 +1096,13 @@ document.addEventListener("keydown", (e)=>{ if(e.key === "Escape" && qrModal.cla
       <img id="qrImg" alt="QR код" />
       <div class="qrHint">
         Наведи камеру телефона на QR-код — откроется страница проекта.<br><br>
-        Ссылка:https://sergeyqop-lgtm.github.io/GB-monitoring/
+        Ссылка:
         <div class="qrLink" id="qrLinkText"></div>
       </div>
     </div>
   </div>
 </div>
+})();
+</script>
 </body>
 </html>
