@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <title>Моё давление (дневник самоконтроля АД)</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#3a8f6a">
+<link rel="icon" href="assets/icon-192.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 
   <style>
     :root{
@@ -131,6 +135,27 @@
       #doctorAside{display:block !important;box-shadow:none;border:none}
       .wrap{max-width:100%;padding:0}
       .card{border:none;box-shadow:none}
+      /* QR modal */
+.modalBack{
+  position:fixed; inset:0; background:rgba(0,0,0,.35);
+  display:none; align-items:center; justify-content:center;
+  padding:16px; z-index:9999;
+}
+.modalBack.show{display:flex}
+.modal{
+  width:min(520px, 100%);
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:20px;
+  box-shadow:0 18px 40px rgba(0,0,0,.18);
+  padding:16px;
+}
+.modalTop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.modal h3{margin:0;font-size:18px}
+.qrBox{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.qrBox img{width:220px;height:220px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.qrHint{min-width:220px;flex:1;color:var(--muted);font-size:13px;line-height:1.45}
+.qrLink{word-break:break-all;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;color:var(--text)}
     }
   </style>
 </head>
@@ -151,6 +176,7 @@
     <div class="toolbar">
       <button class="btn active" id="modeDoctor" type="button">Врач</button>
       <button class="btn" id="modePatient" type="button">Пациент</button>
+      <button class="btn secondary" id="btnQr" type="button">QR-код</button>
       <button class="btn secondary" id="btnReset" type="button" title="Сбросить данные дневника на этом устройстве">Сбросить данные на этом устройстве</button>
     </div>
   </header>
@@ -1018,6 +1044,42 @@
     ctx.fillText(String(Math.round(yMax)), 8, padT+10);
     ctx.fillText(String(Math.round(yMin)), 8, padT+H);
   }
+// =====================
+// QR-код "самораспространение"
+// =====================
+const PROJECT_URL = "https://sergeyqop-lgtm.github.io/GB-monitoring/";
+
+const btnQr = document.getElementById("btnQr");
+const qrModal = document.getElementById("qrModal");
+const qrClose = document.getElementById("qrClose");
+const qrImg = document.getElementById("qrImg");
+const qrLinkText = document.getElementById("qrLinkText");
+
+// Генерация QR через внешний сервис (быстро и без библиотек).
+// Если хочешь полностью офлайн/без внешних сервисов — скажи, дам вариант с локальным QR-генератором (чуть больше кода).
+function buildQr(){
+  const size = 260;
+  const url = PROJECT_URL;
+  const api = "https://api.qrserver.com/v1/create-qr-code/";
+  qrImg.src = `${api}?size=${size}x${size}&data=${encodeURIComponent(url)}&margin=8`;
+  qrLinkText.textContent = url;
+}
+
+function openQr(){
+  buildQr();
+  qrModal.classList.add("show");
+  qrModal.setAttribute("aria-hidden","false");
+}
+
+function closeQr(){
+  qrModal.classList.remove("show");
+  qrModal.setAttribute("aria-hidden","true");
+}
+
+btnQr?.addEventListener("click", openQr);
+qrClose?.addEventListener("click", closeQr);
+qrModal?.addEventListener("click", (e)=>{ if(e.target === qrModal) closeQr(); });
+document.addEventListener("keydown", (e)=>{ if(e.key === "Escape" && qrModal.classList.contains("show")) closeQr(); });
 
   // ---------------------
   // Инициализация врача
@@ -1026,5 +1088,22 @@
 
 })();
 </script>
+  <div class="modalBack" id="qrModal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
+    <div class="modalTop">
+      <h3 id="qrTitle">QR-код для открытия дневника</h3>
+      <button class="btn secondary" id="qrClose" type="button">Закрыть</button>
+    </div>
+
+    <div class="qrBox">
+      <img id="qrImg" alt="QR код" />
+      <div class="qrHint">
+        Наведи камеру телефона на QR-код — откроется страница проекта.<br><br>
+        Ссылка:
+        <div class="qrLink" id="qrLinkText"></div>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
